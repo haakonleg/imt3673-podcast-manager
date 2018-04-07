@@ -10,6 +10,10 @@
             android:icon="@drawable/ic_public_24dp"
             android:title="@string/explore_podcasts"/>
         <item
+            android:id="@+id/nav_saved_episodes"
+            android:icon="@drawable/ic_save_24dp"
+            android:title="@string/saved_episodes"/>
+        <item
             android:id="@+id/nav_add_feed"
             android:icon="@drawable/ic_add_circle_outline_24dp"
             android:title="@string/add_feed"/>
