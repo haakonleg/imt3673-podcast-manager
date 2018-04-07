@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home_24dp"
+            android:title="@string/home"/>
+        <item
+            android:id="@+id/nav_userfeeds"
+            android:icon="@drawable/ic_public_24dp"
+            android:title="@string/explore_podcasts"/>
+        <item
+            android:id="@+id/nav_add_feed"
+            android:icon="@drawable/ic_add_circle_outline_24dp"
+            android:title="@string/add_feed"/>
+    </group>
+
+    <group android:id="@+id/nav_subscriptions"
+        android:checkableBehavior="single">
+    </group>
+
+    <group android:checkableBehavior="single"
+        android:orderInCategory="999">
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_exit_to_app_24dp"
+            android:title="@string/sign_out"/>
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings_24dp"
+            android:title="@string/settings"/>
+    </group>
+</menu>

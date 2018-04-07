@@ -2,7 +2,6 @@ package haakoleg.imt3673_podcast_manager.utils;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.widget.Toast;
 
 import haakoleg.imt3673_podcast_manager.R;
 

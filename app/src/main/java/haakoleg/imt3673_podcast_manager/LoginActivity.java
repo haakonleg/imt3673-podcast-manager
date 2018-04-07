@@ -23,8 +23,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText emailInput;
     private EditText passwordInput;
-    private Button registerBtn;
-    private Button signInBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +45,8 @@ public class LoginActivity extends AppCompatActivity {
             setContentView(R.layout.activity_login);
             emailInput = findViewById(R.id.email_input);
             passwordInput = findViewById(R.id.password_input);
-            registerBtn = findViewById(R.id.create_user_btn);
-            signInBtn = findViewById(R.id.sign_in_btn);
+            Button registerBtn = findViewById(R.id.create_user_btn);
+            Button signInBtn = findViewById(R.id.sign_in_btn);
 
             // Set click listener for register button
             registerBtn.setOnClickListener(v -> {
