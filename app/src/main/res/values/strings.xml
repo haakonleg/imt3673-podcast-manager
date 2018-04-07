@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">IMT3673_Podcast_Manager</string>
+    <string name="sign_in_txt">Sign in to Podcast Manager</string>
+    <string name="e_mail_input">E-Mail:</string>
+    <string name="password_input">Password:</string>
+    <string name="register_user">Register</string>
+    <string name="sign_in">Sign In</string>
+    <string name="dialog_error">Error</string>
+    <string name="error_empty">Email or password cannot be empty</string>
 </resources>

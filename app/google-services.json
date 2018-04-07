@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "308043212170",
+    "firebase_url": "https://imt3673-podcast-manager.firebaseio.com",
+    "project_id": "imt3673-podcast-manager",
+    "storage_bucket": "imt3673-podcast-manager.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:308043212170:android:1778ae3c01ddec68",
+        "android_client_info": {
+          "package_name": "haakoleg.imt3673_podcast_manager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "308043212170-851sm423iu418mvtbv666uk9nmv3md0r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6UNklw_Xil0a7iXha76kEi5RJWMNr9p4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
