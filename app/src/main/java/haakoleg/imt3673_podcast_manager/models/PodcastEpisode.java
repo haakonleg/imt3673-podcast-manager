@@ -1,9 +1,17 @@
 package haakoleg.imt3673_podcast_manager.models;
 
+import android.arch.persistence.room.Entity;
+import android.support.annotation.NonNull;
+
+@Entity(primaryKeys = {"parentUrl", "audioUrl"})
 public class PodcastEpisode {
+    @NonNull
+    private String parentUrl;
+
     private String title;
     private String description;
     private String link;
+    @NonNull
     private String audioUrl;
     private int duration;
     private long updated;
@@ -54,5 +62,13 @@ public class PodcastEpisode {
 
     public void setUpdated(long updated) {
         this.updated = updated;
+    }
+
+    public String getParentUrl() {
+        return parentUrl;
+    }
+
+    public void setParentUrl(String parentUrl) {
+        this.parentUrl = parentUrl;
     }
 }

@@ -1,6 +1,5 @@
 package haakoleg.imt3673_podcast_manager;
 
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -10,17 +9,28 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 
-import haakoleg.imt3673_podcast_manager.models.PodcastEpisode;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+
+import haakoleg.imt3673_podcast_manager.models.Podcast;
+import haakoleg.imt3673_podcast_manager.tasks.GetPodcastsTask;
 import haakoleg.imt3673_podcast_manager.tasks.ParsePodcastTask;
+import haakoleg.imt3673_podcast_manager.tasks.SyncPodcastTask;
+import haakoleg.imt3673_podcast_manager.utils.CheckNetwork;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private NavigationView navView;
     private DrawerLayout drawerLayout;
     private SubMenu subscriptionsMenu;
+
+    // This contains all podcasts the user has saved
+    private SparseArray<Podcast> podcasts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,36 +53,79 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Menu navMenu = navView.getMenu();
         subscriptionsMenu = navMenu.addSubMenu(R.id.nav_subscriptions, R.id.nav_subscriptions_submenu, Menu.NONE, R.string.my_subscriptions);
 
-        addFeed();
+        this.podcasts = new SparseArray<>();
 
-        // TEST PARSER
-        ParsePodcastTask task = new ParsePodcastTask(this, "http://feeds.gimletmedia.com/hearreplyall", result ->  {
-            Log.e("Title", result.getTitle());
-            Log.e("Description", result.getDescription());
-            Log.e("Image", result.getImage());
-            Log.e("Category", result.getCategory());
-            Log.e("Date", Long.toString(result.getUpdated()));
+        // Add stored podcasts to the drawer
+        addSavedPodcasts();
+    }
 
-            for(PodcastEpisode ep : result.getEpisodes()) {
-                Log.e("TITLE", ep.getTitle());
-                Log.e("DESCRIPTION", ep.getDescription());
-                Log.e("UPDATED", Long.toString(ep.getUpdated()));
-                Log.e("AUDIO", ep.getAudioUrl());
-                Log.e("DURATION", Integer.toString(ep.getDuration()));
+    /**
+     * Retrieves all saved podcasts from the SQLite database, syncs episodes if there is an
+     * internet connection, and adds them to the list of podcasts in the drawer menu
+     */
+    private void addSavedPodcasts() {
+        GetPodcastsTask task = new GetPodcastsTask(this, podcasts -> {
+            for (Podcast podcast : podcasts) {
+                addPodcastToDrawer(podcast);
             }
-
+            if (CheckNetwork.hasNetwork(this)) {
+                syncPodcasts(podcasts);
+            }
         }, error -> {
-            Log.e("ERROR", Integer.toString(error));
+            // TODO: Handle error
         });
         ThreadManager.get().execute(task);
     }
 
+    private void syncPodcasts(List<Podcast> podcasts) {
+        // Have to use iterator, otherwise it is impossible to access current index in a lambda
+        for (ListIterator<Podcast> iter = podcasts.listIterator(); iter.hasNext();) {
+            int i = iter.nextIndex();
+            Podcast podcast = iter.next();
+
+            ParsePodcastTask task = new ParsePodcastTask(this, podcast.getUrl(), parsedPodcast -> {
+                SyncPodcastTask syncTask = new SyncPodcastTask(this, parsedPodcast, updatedEpisodes -> {
+                    Log.e("Synced", podcast.getUrl());
+                    if (i == podcasts.size() - 1) {
+                        // TODO: Notify when all podcasts are synced
+                    }
+                }, error -> {
+                    // TODO: Handle error
+                });
+                ThreadManager.get().execute(syncTask);
+            }, error -> {
+                // TODO: Handle error
+            });
+            ThreadManager.get().execute(task);
+        }
+    }
+
+    private void addPodcastToDrawer(Podcast podcast) {
+        // Uses hashcode as the key for the podcast in the array
+        int id = podcast.hashCode();
+        // Add to array and drawer if it doesn't already exist
+        if (this.podcasts.get(id) == null) {
+            this.podcasts.put(id, podcast);
+            subscriptionsMenu.add(R.id.nav_subscriptions_submenu, id, Menu.NONE, podcast.getTitle()).setCheckable(true);
+        }
+    }
+
     /**
-     * Adds a new feed to the menu in the drawer
+     * Parses a new podcast, and if the podcast is of a valid format, it is added to the drawer menu
      */
-    public void addFeed() {
-        subscriptionsMenu.add(R.id.nav_subscriptions_submenu, 1, Menu.NONE, "Test 1").setCheckable(true);
-        subscriptionsMenu.add(R.id.nav_subscriptions_submenu, 2, Menu.NONE, "Test 2").setCheckable(true);
+    private void addPodcast(String url) {
+        ParsePodcastTask task = new ParsePodcastTask(this, url, podcast ->  {
+            addPodcastToDrawer(podcast);
+
+            // Sync this podcast
+            ArrayList<Podcast> toSync = new ArrayList<>();
+            toSync.add(podcast);
+            syncPodcasts(toSync);
+        }, error -> {
+            // TODO: Show better error
+            Log.e("ERROR", Integer.toString(error));
+        });
+        ThreadManager.get().execute(task);
     }
 
     @Override
@@ -91,7 +144,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        Log.e("MenuItem", Integer.toString(item.getItemId()));
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.nav_add_feed:
+                item.setCheckable(false);
+                AddPodcastDialogFragment dialog = new AddPodcastDialogFragment();
+                dialog.setListener(MainActivity.this::addPodcast);
+                dialog.show(getSupportFragmentManager(), "AddPodcastDialog");
+                break;
+            // Selected a podcast
+            default:
+                Podcast podcast = podcasts.get(id);
+                Log.e("PODCAST", podcast.getTitle());
+                break;
+        }
+
         return true;
     }
 }

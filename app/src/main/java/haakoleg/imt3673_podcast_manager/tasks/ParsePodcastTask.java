@@ -47,6 +47,7 @@ public class ParsePodcastTask extends Task<Podcast> {
         try {
             PodcastParser podParser = new PodcastParser();
             podcast = podParser.parse(xml);
+            podcast.setUrl(this.url);
         } catch (XmlPullParserException | IOException e) {
             Log.e("ParsePodcastTask", Log.getStackTraceString(e));
             return ERROR_PARSE;

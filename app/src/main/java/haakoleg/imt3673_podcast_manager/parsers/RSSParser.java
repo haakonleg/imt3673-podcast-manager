@@ -69,7 +69,7 @@ public class RSSParser extends Parser {
             } else if (tagName.equalsIgnoreCase("pubDate")) {
                 podcast.setUpdated(readDate(parser, sdf));
             } else if (tagName.equalsIgnoreCase("item")) {
-                podcast.addEpisode(readEpisode(parser));
+                podcast.addEpisode(readEpisode(parser, podcast));
             } else {
                 skip(parser);
             }
@@ -77,7 +77,7 @@ public class RSSParser extends Parser {
 
     }
 
-    private PodcastEpisode readEpisode(XmlPullParser parser) throws XmlPullParserException, IOException {
+    private PodcastEpisode readEpisode(XmlPullParser parser, Podcast podcast) throws XmlPullParserException, IOException {
         PodcastEpisode episode = new PodcastEpisode();
 
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -117,7 +117,6 @@ public class RSSParser extends Parser {
                 skip(parser);
             }
         }
-
         return episode;
     }
 

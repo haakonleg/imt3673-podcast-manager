@@ -8,10 +8,14 @@
     <string name="dialog_error">Error</string>
     <string name="error_empty">Email or password cannot be empty</string>
     <string name="explore_podcasts">Explore Podcasts</string>
-    <string name="add_feed">Add a Feed</string>
+    <string name="add_feed">Add a Podcast</string>
     <string name="settings">Settings</string>
     <string name="sign_out">Sign Out</string>
     <string name="my_subscriptions">My Subscriptions</string>
     <string name="home">Home</string>
     <string name="saved_episodes">Saved Episodes</string>
+    <string name="dialog_new_podcast">New Podcast</string>
+    <string name="add_podcast_url_to">URL to Podcast</string>
+    <string name="dialog_add">Add</string>
+    <string name="dialog_cancel">Cancel</string>
 </resources>

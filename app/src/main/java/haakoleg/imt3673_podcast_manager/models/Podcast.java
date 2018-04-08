@@ -1,10 +1,21 @@
 package haakoleg.imt3673_podcast_manager.models;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
+
+import com.google.firebase.database.Exclude;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+@Entity
 public class Podcast {
     // The URL to the feed itself
+    @NonNull
+    @PrimaryKey
     private String url;
 
     // Data from parsing the feed
@@ -15,6 +26,8 @@ public class Podcast {
     private String image;
     private long updated;
 
+    // Exclude from Room and Firebase, as this field is not used there
+    @Ignore
     private List<PodcastEpisode> episodes;
 
     public Podcast() {
@@ -25,6 +38,8 @@ public class Podcast {
         episodes.add(episode);
     }
 
+    // Exclude episodes from Firebase
+    @Exclude
     public List<PodcastEpisode> getEpisodes() {
         return episodes;
     }
@@ -83,5 +98,11 @@ public class Podcast {
 
     public void setUpdated(long updated) {
         this.updated = updated;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.url, this.title, this.link,
+                this.description, this.category, this.image, this.updated);
     }
 }
