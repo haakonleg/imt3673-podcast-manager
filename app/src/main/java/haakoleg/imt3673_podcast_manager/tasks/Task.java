@@ -4,6 +4,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import haakoleg.imt3673_podcast_manager.ThreadManager;
+
 /**
  * Abstract class which is supposed to be implemented by other tasks. Tasks extending this class
  * overrides doTask() which is the task itself. This method returns either TASK_SUCCESSFUL or an
@@ -11,7 +13,10 @@ import android.util.Log;
  * @param <T> The type of resultObject which is passed to the UI thread when the task is finished
  */
 public abstract class Task<T> implements Runnable {
-    public static int TASK_SUCCESSFUL = 0;
+    public static final int SUCCESSFUL = 0;
+    public static final int ERROR_NO_INTERNET = 1;
+    public static final int ERROR_DOWNLOAD = 2;
+    public static final int ERROR_PARSE = 3;
 
     private Handler mainHandler;
     private OnSuccessListener<T> successListener;
@@ -35,7 +40,7 @@ public abstract class Task<T> implements Runnable {
     public void run() {
         int result = doTask();
         // Task was successful, call back to UI thread
-        if (result == TASK_SUCCESSFUL) {
+        if (result == SUCCESSFUL) {
             if (resultObject == null) {
                 Log.e("Task", "WARNING: The task did not set a resultObject but returned successful");
             } else {
@@ -53,6 +58,10 @@ public abstract class Task<T> implements Runnable {
 
     // Must be overridden by tasks extending this class
     protected abstract int doTask();
+
+    public void execute() {
+        ThreadManager.get().execute(this);
+    }
 
     public interface OnSuccessListener<T> {
         void onSuccess(T result);

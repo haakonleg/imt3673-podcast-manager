@@ -1,5 +1,6 @@
 package haakoleg.imt3673_podcast_manager;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,6 +13,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
+
+import haakoleg.imt3673_podcast_manager.models.PodcastEpisode;
+import haakoleg.imt3673_podcast_manager.tasks.ParsePodcastTask;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private NavigationView navView;
@@ -40,6 +44,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         subscriptionsMenu = navMenu.addSubMenu(R.id.nav_subscriptions, R.id.nav_subscriptions_submenu, Menu.NONE, R.string.my_subscriptions);
 
         addFeed();
+
+        // TEST PARSER
+        ParsePodcastTask task = new ParsePodcastTask(this, "http://feeds.gimletmedia.com/hearreplyall", result ->  {
+            Log.e("Title", result.getTitle());
+            Log.e("Description", result.getDescription());
+            Log.e("Image", result.getImage());
+            Log.e("Category", result.getCategory());
+            Log.e("Date", Long.toString(result.getUpdated()));
+
+            for(PodcastEpisode ep : result.getEpisodes()) {
+                Log.e("TITLE", ep.getTitle());
+                Log.e("DESCRIPTION", ep.getDescription());
+                Log.e("UPDATED", Long.toString(ep.getUpdated()));
+                Log.e("AUDIO", ep.getAudioUrl());
+                Log.e("DURATION", Integer.toString(ep.getDuration()));
+            }
+
+        }, error -> {
+            Log.e("ERROR", Integer.toString(error));
+        });
+        ThreadManager.get().execute(task);
     }
 
     /**

@@ -6,3 +6,9 @@ The idea is to create a native Android app where the user can add RSS or Atom fe
 
 ## Features
 Link to Trello board: https://trello.com/b/sAWoGFWo/imt3673-podcast-manager
+
+## Libraries/APIs used
+* [Firebase](https://firebase.google.com/docs/android/setup)
+* [XmlPullParser](https://developer.android.com/reference/org/xmlpull/v1/XmlPullParser.html)
+* [Room Persistence Library](https://developer.android.com/topic/libraries/architecture/room.html)
+* [MediaPlayer](https://developer.android.com/guide/topics/media/mediaplayer.html)
