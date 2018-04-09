@@ -2,6 +2,7 @@ package haakoleg.imt3673_podcast_manager;
 
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -100,6 +101,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    /**
+     * Adds a podcast to the drawer list, and the list containing all podcasts the user has
+     * subscribed to. The SparseArray list containing the podcasts uses the hashcode of the
+     * podcast object as the key, and this hashcode is also used for the item id of the MenuItem.
+     * @param podcast The podcast object to add
+     */
     private void addPodcastToDrawer(Podcast podcast) {
         // Uses hashcode as the key for the podcast in the array
         int id = podcast.hashCode();
@@ -126,6 +133,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Log.e("ERROR", Integer.toString(error));
         });
         ThreadManager.get().execute(task);
+    }
+
+
+    /**
+     * Replace a fragment in the "main_content" FrameLayout, which
+     * is the main container for fragments in the app
+     * @param fragment The fragment to display
+     * @param tag The tag used for identifying the fragment in the backstack
+     */
+    private void displayContent(Fragment fragment, String tag) {
+        getSupportFragmentManager().popBackStack();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main_content, fragment)
+                .addToBackStack(tag).commit();
     }
 
     @Override
@@ -155,7 +176,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Selected a podcast
             default:
                 Podcast podcast = podcasts.get(id);
-                Log.e("PODCAST", podcast.getTitle());
+                ArrayList<Podcast> singlePodcast = new ArrayList<>();
+                singlePodcast.add(podcast);
+                ShowEpisodesFragment fragment = ShowEpisodesFragment.newInstance(singlePodcast, 50);
+                displayContent(fragment, "ShowEpisodes");
                 break;
         }
 

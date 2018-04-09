@@ -3,6 +3,8 @@ package haakoleg.imt3673_podcast_manager.models;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import com.google.firebase.database.Exclude;
@@ -12,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-public class Podcast {
+public class Podcast implements Parcelable {
     // The URL to the feed itself
     @NonNull
     @PrimaryKey
@@ -98,6 +100,48 @@ public class Podcast {
 
     public void setUpdated(long updated) {
         this.updated = updated;
+    }
+
+    /**
+     * Constructor for parcelable
+     * @param in Parcel to fill with data
+     */
+    public Podcast(Parcel in) {
+        url = in.readString();
+        title = in.readString();
+        link = in.readString();
+        description = in.readString();
+        category = in.readString();
+        image = in.readString();
+        updated = in.readLong();
+    }
+
+    public static final Parcelable.Creator<Podcast> CREATOR = new Parcelable.Creator<Podcast>() {
+        @Override
+        public Podcast createFromParcel(Parcel source) {
+            return new Podcast(source);
+        }
+
+        @Override
+        public Podcast[] newArray(int size) {
+            return new Podcast[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(url);
+        dest.writeString(title);
+        dest.writeString(link);
+        dest.writeString(description);
+        dest.writeString(category);
+        dest.writeString(image);
+        dest.writeLong(updated);
     }
 
     @Override

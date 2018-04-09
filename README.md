@@ -12,3 +12,4 @@ Link to Trello board: https://trello.com/b/sAWoGFWo/imt3673-podcast-manager
 * [XmlPullParser](https://developer.android.com/reference/org/xmlpull/v1/XmlPullParser.html)
 * [Room Persistence Library](https://developer.android.com/topic/libraries/architecture/room.html)
 * [MediaPlayer](https://developer.android.com/guide/topics/media/mediaplayer.html)
+* [Glide](https://github.com/bumptech/glide)

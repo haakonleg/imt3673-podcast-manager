@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="5dp"
+    android:layout_marginEnd="5dp"
+    android:layout_marginTop="2.5dp"
+    android:layout_marginBottom="2.5dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    card_view:contentPadding="5dp"
+    card_view:cardElevation="4dp">
+    
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/episode_img"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                app:srcCompat="@color/black" />
+
+            <TextView
+                android:id="@+id/episode_title_txt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:text="EPISODE_TITLE"
+                android:textAppearance="@android:style/TextAppearance.Material"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/episode_img" />
+
+            <TextView
+                android:id="@+id/episode_desc_txt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="2dp"
+                android:maxLines="3"
+                android:text="EPISODE_DESCRIPTION"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/episode_img"
+                app:layout_constraintTop_toBottomOf="@+id/episode_title_txt" />
+
+            <TextView
+                android:id="@+id/episode_podcast_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="PODCAST_TITLE"
+                app:layout_constraintTop_toBottomOf="@+id/episode_img" />
+
+            <TextView
+                android:id="@+id/episode_duration_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="EPISODE_DURATION"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+
+        </android.support.constraint.ConstraintLayout>
+
+</android.support.v7.widget.CardView>
