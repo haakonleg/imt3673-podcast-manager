@@ -18,4 +18,7 @@
     <string name="add_podcast_url_to">URL to Podcast</string>
     <string name="dialog_add">Add</string>
     <string name="dialog_cancel">Cancel</string>
+    <string name="play_pause">Play/Pause</string>
+    <string name="rewind">Rewind</string>
+    <string name="fast_forward">Fast Forward</string>
 </resources>

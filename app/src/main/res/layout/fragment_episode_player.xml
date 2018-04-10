@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/player_img"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:layout_above="@id/player_seekbar"
+        app:srcCompat="@color/black" />
+
+    <ProgressBar
+        android:id="@+id/player_progressbar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="@color/white" />
+
+    <SeekBar
+        android:id="@+id/player_seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="30dp"
+        android:maxHeight="30dp"
+        android:layout_above="@id/player_duration" />
+
+    <TextView
+        android:id="@+id/player_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/player_podcast_title"
+        android:layout_centerHorizontal="true"
+        android:text="00:00/00:00" />
+
+    <TextView
+        android:id="@+id/player_podcast_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:layout_above="@id/player_episode_title"
+        android:text="PODCAST_TITLE" />
+
+    <TextView
+        android:id="@+id/player_episode_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/player_play_btn"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:text="EPISODE_TITLE"
+        android:textAppearance="@android:style/TextAppearance.Material" />
+
+    <ImageButton
+        android:id="@+id/player_rewind_btn"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_toStartOf="@id/player_play_btn"
+        android:layout_alignBottom="@id/player_play_btn"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/rewind"
+        app:srcCompat="@drawable/ic_fast_rewind_24dp" />
+
+    <ImageButton
+        android:id="@+id/player_play_btn"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/play_pause"
+        app:srcCompat="@drawable/ic_play_arrow_24dp" />
+
+    <ImageButton
+        android:id="@+id/player_forward_btn"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_toEndOf="@id/player_play_btn"
+        android:layout_alignBottom="@id/player_play_btn"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/fast_forward"
+        app:srcCompat="@drawable/ic_fast_forward_24dp" />
+
+</RelativeLayout>

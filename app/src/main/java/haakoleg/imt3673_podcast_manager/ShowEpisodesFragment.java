@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 import haakoleg.imt3673_podcast_manager.models.Podcast;
+import haakoleg.imt3673_podcast_manager.models.PodcastEpisode;
 import haakoleg.imt3673_podcast_manager.tasks.GetEpisodesTask;
 
 /**
@@ -77,11 +79,20 @@ public class ShowEpisodesFragment extends Fragment {
 
         // Retrieve episodes from SQLite and create new adapter for the RecyclerView
         GetEpisodesTask task = new GetEpisodesTask(getActivity(), podcasts, episodes -> {
-            EpisodesRecyclerAdapter adapter = new EpisodesRecyclerAdapter(this, podcasts, episodes);
+            EpisodesRecyclerAdapter adapter =
+                    new EpisodesRecyclerAdapter(this, new EpisodeClickListener(), podcasts, episodes);
             episodesRecycler.setAdapter(adapter);
         }, error -> {
             // TODO: Handle error
         });
         ThreadManager.get().execute(task);
+    }
+
+    private class EpisodeClickListener implements EpisodesRecyclerAdapter.OnEpisodeClickListener {
+        @Override
+        public void onEpisodeClicked(PodcastEpisode episode, Podcast podcast) {
+            EpisodePlayerFragment fragment = EpisodePlayerFragment.newInstance(episode, podcast);
+            ((MainActivity)getActivity()).displayContent(fragment, "PlayEpisode");
+        }
     }
 }

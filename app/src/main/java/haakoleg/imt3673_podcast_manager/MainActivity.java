@@ -1,5 +1,6 @@
 package haakoleg.imt3673_podcast_manager;
 
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -142,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @param fragment The fragment to display
      * @param tag The tag used for identifying the fragment in the backstack
      */
-    private void displayContent(Fragment fragment, String tag) {
+    public void displayContent(Fragment fragment, String tag) {
         getSupportFragmentManager().popBackStack();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.main_content, fragment)
@@ -183,6 +184,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
         }
 
+        drawerLayout.closeDrawers();
         return true;
     }
 }

@@ -24,6 +24,7 @@ import haakoleg.imt3673_podcast_manager.models.PodcastEpisode;
 
 public class EpisodesRecyclerAdapter extends RecyclerView.Adapter<EpisodesRecyclerAdapter.ViewHolder> {
     private Fragment fragment;
+    private OnEpisodeClickListener listener;
     private HashMap<String, Podcast> podcasts;
     private List<PodcastEpisode> episodes;
 
@@ -33,8 +34,9 @@ public class EpisodesRecyclerAdapter extends RecyclerView.Adapter<EpisodesRecycl
      * @param podcasts List of podcasts that the episodes belong to
      * @param episodes List of episodes to display in the RecyclerView
      */
-    public EpisodesRecyclerAdapter(Fragment fragment, List<Podcast> podcasts, List<PodcastEpisode> episodes) {
+    public EpisodesRecyclerAdapter(Fragment fragment, OnEpisodeClickListener listener, List<Podcast> podcasts, List<PodcastEpisode> episodes) {
         this.fragment = fragment;
+        this.listener = listener;
         this.podcasts = new HashMap<>();
         for (Podcast podcast : podcasts) {
             this.podcasts.put(podcast.getUrl(), podcast);
@@ -91,6 +93,17 @@ public class EpisodesRecyclerAdapter extends RecyclerView.Adapter<EpisodesRecycl
             descTxt = itemView.findViewById(R.id.episode_desc_txt);
             podcastTxt = itemView.findViewById(R.id.episode_podcast_txt);
             durationTxt = itemView.findViewById(R.id.episode_duration_txt);
+
+            // Set onclick listener for this episode item
+            itemView.setOnClickListener(v -> {
+                PodcastEpisode episode = episodes.get(getAdapterPosition());
+                Podcast podcast = podcasts.get(episode.getParentUrl());
+                listener.onEpisodeClicked(episode, podcast);
+            });
         }
+    }
+
+    public interface OnEpisodeClickListener {
+        void onEpisodeClicked(PodcastEpisode episode, Podcast podcast);
     }
 }
