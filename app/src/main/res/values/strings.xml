@@ -21,4 +21,6 @@
     <string name="play_pause">Play/Pause</string>
     <string name="rewind">Rewind</string>
     <string name="fast_forward">Fast Forward</string>
+    <string name="post_comment">Post Comment</string>
+    <string name="comment_post">Post</string>
 </resources>

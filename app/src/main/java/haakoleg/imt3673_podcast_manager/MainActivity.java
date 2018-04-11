@@ -183,6 +183,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_home:
                 getSupportFragmentManager().popBackStack();
                 break;
+            case R.id.nav_userfeeds:
+                getSupportFragmentManager().popBackStack();
+                displayContent(new ExplorePodcastsFragment(), "ExplorePodcasts");
+                break;
             case R.id.nav_add_feed:
                 item.setCheckable(false);
                 AddPodcastDialogFragment dialog = new AddPodcastDialogFragment();
