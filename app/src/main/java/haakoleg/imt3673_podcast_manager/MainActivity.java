@@ -15,6 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -196,6 +198,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_saved_episodes:
                 getSupportFragmentManager().popBackStack();
                 displayContent(ShowEpisodesFragment.newInstanceDownloaded(new ArrayList<>(podcasts.values())), "DownloadedEpisodes");
+                break;
+            case R.id.nav_logout:
+                FirebaseAuth.getInstance().signOut();
+                finish();
                 break;
             default:
                 // Selected a podcast

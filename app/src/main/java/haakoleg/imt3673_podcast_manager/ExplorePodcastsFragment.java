@@ -55,19 +55,35 @@ public class ExplorePodcastsFragment extends Fragment implements
     public void onDataChange(DataSnapshot dataSnapshot) {
         ArrayList<Podcast> podcasts = new ArrayList<>((int)dataSnapshot.getChildrenCount());
         ArrayList<Integer> subscriberCounts = new ArrayList<>();
+        ArrayList<Integer> ratings = new ArrayList<>();
 
         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
             Podcast podcast = snapshot.getValue(Podcast.class);
+
+            // Add the podcast to list
             podcasts.add(podcast);
+            // Get number of subscribers to this podcast
             int subscriberCount = (int) snapshot.child("subscribers").getChildrenCount();
             subscriberCounts.add(subscriberCount);
+
+            // Get the average rating of this podcast
+            DataSnapshot ratingSnap = snapshot.child("ratings");
+            int numRatings = (int) ratingSnap.getChildrenCount();
+            int avg = 0;
+            for (DataSnapshot rating : ratingSnap.getChildren()) {
+                avg += ((Long)rating.getValue()).intValue();
+            }
+            if (numRatings > 0) {
+                avg /= numRatings;
+            }
+            ratings.add(avg);
         }
 
         // Create adapter
         PodcastsRecyclerAdapter adapter =
                 new PodcastsRecyclerAdapter(
                         ExplorePodcastsFragment.this,
-                        podcasts, subscriberCounts, this);
+                        podcasts, subscriberCounts, ratings, this);
         podcastsRecycler.setAdapter(adapter);
     }
 

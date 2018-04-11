@@ -9,6 +9,7 @@ import android.widget.EditText;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -87,6 +88,14 @@ public class LoginActivity extends AppCompatActivity {
     private void registerUser(String email, String password) {
         fAuth.createUserWithEmailAndPassword(email, password).addOnSuccessListener(result -> {
             FirebaseUser user = fAuth.getCurrentUser();
+
+            // Set user display name
+            // TODO: Don't use email
+            UserProfileChangeRequest changeRequest = new UserProfileChangeRequest.Builder()
+                    .setDisplayName(email)
+                    .build();
+            user.updateProfile(changeRequest);
+
             // Save user to database
             dbRef.child("users").child(user.getUid()).setValue(new User(user.getEmail(), user.getEmail()));
             goToMain();

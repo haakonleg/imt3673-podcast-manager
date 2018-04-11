@@ -48,9 +48,9 @@ public class SyncPodcastTask extends Task<List<PodcastEpisode>> {
 
     private void syncPodcastWithFirebase(Podcast podcast) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        // Need to encode the podcast URL to base64 string since URLs can't be stored as key in Firebase
-        String encodedUrl = Base64.encodeToString(podcast.getUrl().getBytes(), Base64.NO_WRAP);
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference().child("podcasts").child(encodedUrl);
+        // Use hashcode of the podcast object as key
+        String key = Integer.toHexString(podcast.hashCode());
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference().child("podcasts").child(key);
 
         // Check if the podcast exists in Firebase, if not add it
         // Also add the user to the podcast list of subscribed users
@@ -61,7 +61,7 @@ public class SyncPodcastTask extends Task<List<PodcastEpisode>> {
                     dbRef.setValue(podcast);
                 }
                 dbRef.child("subscribers").child(user.getUid()).setValue(Boolean.TRUE);
-                dbRef.getParent().getParent().child("users").child(user.getUid()).child("subscriptions").child(encodedUrl).setValue(podcast.getUrl());
+                dbRef.getParent().getParent().child("users").child(user.getUid()).child("subscriptions").child(key).setValue(podcast.getUrl());
             }
 
             @Override

@@ -13,11 +13,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+
+import haakoleg.imt3673_podcast_manager.models.Comment;
 import haakoleg.imt3673_podcast_manager.models.Podcast;
 
-public class DisplayPodcastFragment extends Fragment {
+public class DisplayPodcastFragment extends Fragment implements ChildEventListener {
     private Podcast podcast;
+    private CommentsRecyclerAdapter adapter;
 
     private FloatingActionButton addFab;
     private FloatingActionButton commentFab;
@@ -74,8 +84,44 @@ public class DisplayPodcastFragment extends Fragment {
         super.onStart();
 
         commentFab.setOnClickListener(v -> {
-            PostCommentDialogFragment dialog = new PostCommentDialogFragment();
+            PostCommentDialogFragment dialog = PostCommentDialogFragment.newInstance(Integer.toHexString(podcast.hashCode()));
             dialog.show(getActivity().getSupportFragmentManager(), "PostCommentDialog");
         });
+
+        // Create adapter for comments recyclerview
+        adapter = new CommentsRecyclerAdapter(new ArrayList<>());
+        commentsRecycler.setAdapter(adapter);
+
+        // Start child event listener for displaying comments
+        String podcastId = Integer.toHexString(podcast.hashCode());
+        DatabaseReference dbRef =
+                FirebaseDatabase.getInstance().getReference().child("comments").child(podcastId);
+        dbRef.addChildEventListener(this);
+    }
+
+    @Override
+    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+        Comment comment = dataSnapshot.getValue(Comment.class);
+        adapter.addComment(comment);
+    }
+
+    @Override
+    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+    }
+
+    @Override
+    public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+    }
+
+    @Override
+    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+    }
+
+    @Override
+    public void onCancelled(DatabaseError databaseError) {
+
     }
 }

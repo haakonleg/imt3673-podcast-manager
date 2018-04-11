@@ -23,19 +23,16 @@ public class PodcastsRecyclerAdapter extends RecyclerView.Adapter<PodcastsRecycl
     private Fragment fragment;
     private List<Podcast> podcasts;
     private List<Integer> subscriberCounts;
+    private List<Integer> ratings;
     private OnPodcastClickListener listener;
 
     public PodcastsRecyclerAdapter(
-            Fragment fragment, List<Podcast> podcasts, List<Integer> subscriberCounts, OnPodcastClickListener listener) {
+            Fragment fragment, List<Podcast> podcasts, List<Integer> subscriberCounts, List<Integer> ratings, OnPodcastClickListener listener) {
         this.fragment = fragment;
         this.podcasts = podcasts;
         this.subscriberCounts = subscriberCounts;
+        this.ratings = ratings;
         this.listener = listener;
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull List<Object> payloads) {
-        super.onBindViewHolder(holder, position, payloads);
     }
 
     @NonNull
@@ -58,6 +55,7 @@ public class PodcastsRecyclerAdapter extends RecyclerView.Adapter<PodcastsRecycl
 
         holder.podcastTitleTxt.setText(podcast.getTitle());
         holder.podcastCategoryTxt.setText(podcast.getCategory());
+        holder.podcastRating.setRating((float) ratings.get(position));
         holder.podcastSubscribersTxt.setText(Integer.toString(subscriberCounts.get(position)));
     }
 
