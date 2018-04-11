@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -27,6 +28,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
+import java.io.File;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -107,6 +109,16 @@ public class EpisodePlayerFragment extends Fragment {
         builder.setMediaUri(Uri.parse(episode.getAudioUrl()));
         builder.setMediaId("mediaId");
         builder.setIconUri(Uri.parse(podcast.getImage()));
+
+        // Check if the episode is downloaded to local storage, and if so, set the media uri
+        // to local audio file
+        if (episode.isDownloaded()) {
+            builder.setMediaUri(Uri.fromFile(
+                    new File(MainActivity.DOWNLOAD_DIR, Integer.toHexString(episode.hashCode()))));
+        } else {
+            builder.setMediaUri(Uri.parse(episode.getAudioUrl()));
+        }
+
         EpisodePlaybackService.setMedia(builder.build());
     }
 

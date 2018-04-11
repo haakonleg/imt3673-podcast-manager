@@ -1,6 +1,6 @@
 package haakoleg.imt3673_podcast_manager;
 
-import android.os.Handler;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -11,12 +11,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -27,12 +28,15 @@ import haakoleg.imt3673_podcast_manager.tasks.SyncPodcastTask;
 import haakoleg.imt3673_podcast_manager.utils.CheckNetwork;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    public static final File DOWNLOAD_DIR = new File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "/podcastmanager/");
+
     private NavigationView navView;
     private DrawerLayout drawerLayout;
     private SubMenu subscriptionsMenu;
 
     // This contains all podcasts the user has saved
-    private SparseArray<Podcast> podcasts;
+    private HashMap<Integer, Podcast> podcasts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,17 +59,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Menu navMenu = navView.getMenu();
         subscriptionsMenu = navMenu.addSubMenu(R.id.nav_subscriptions, R.id.nav_subscriptions_submenu, Menu.NONE, R.string.my_subscriptions);
 
-        this.podcasts = new SparseArray<>();
+        this.podcasts = new HashMap<>();
 
         // Add stored podcasts to the drawer
-        addSavedPodcasts();
+        initialize();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ThreadManager.get().interruptAll();
     }
 
     /**
      * Retrieves all saved podcasts from the SQLite database, syncs episodes if there is an
      * internet connection, and adds them to the list of podcasts in the drawer menu
      */
-    private void addSavedPodcasts() {
+    private void initialize() {
         GetPodcastsTask task = new GetPodcastsTask(this, podcasts -> {
             for (Podcast podcast : podcasts) {
                 addPodcastToDrawer(podcast);
@@ -73,6 +83,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (CheckNetwork.hasNetwork(this)) {
                 syncPodcasts(podcasts);
             }
+            // Show home fragment containing recent episodes from all podcasts
+            ShowEpisodesFragment fragment = ShowEpisodesFragment.newInstance(new ArrayList<>(this.podcasts.values()), 50);
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment).commit();
         }, error -> {
             // TODO: Handle error
         });
@@ -144,7 +157,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @param tag The tag used for identifying the fragment in the backstack
      */
     public void displayContent(Fragment fragment, String tag) {
-        getSupportFragmentManager().popBackStack();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.main_content, fragment)
                 .addToBackStack(tag).commit();
@@ -168,18 +180,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         switch (id) {
+            case R.id.nav_home:
+                getSupportFragmentManager().popBackStack();
+                break;
             case R.id.nav_add_feed:
                 item.setCheckable(false);
                 AddPodcastDialogFragment dialog = new AddPodcastDialogFragment();
                 dialog.setListener(MainActivity.this::addPodcast);
                 dialog.show(getSupportFragmentManager(), "AddPodcastDialog");
                 break;
-            // Selected a podcast
+            case R.id.nav_saved_episodes:
+                getSupportFragmentManager().popBackStack();
+                displayContent(ShowEpisodesFragment.newInstanceDownloaded(new ArrayList<>(podcasts.values())), "DownloadedEpisodes");
+                break;
             default:
+                // Selected a podcast
                 Podcast podcast = podcasts.get(id);
                 ArrayList<Podcast> singlePodcast = new ArrayList<>();
                 singlePodcast.add(podcast);
                 ShowEpisodesFragment fragment = ShowEpisodesFragment.newInstance(singlePodcast, 50);
+                getSupportFragmentManager().popBackStack();
                 displayContent(fragment, "ShowEpisodes");
                 break;
         }

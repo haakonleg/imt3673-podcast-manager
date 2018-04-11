@@ -1,17 +1,21 @@
 package haakoleg.imt3673_podcast_manager;
 
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
@@ -38,6 +42,7 @@ public class EpisodesRecyclerAdapter extends RecyclerView.Adapter<EpisodesRecycl
         this.fragment = fragment;
         this.listener = listener;
         this.podcasts = new HashMap<>();
+        // Add podcasts to hashmap
         for (Podcast podcast : podcasts) {
             this.podcasts.put(podcast.getUrl(), podcast);
         }
@@ -69,6 +74,19 @@ public class EpisodesRecyclerAdapter extends RecyclerView.Adapter<EpisodesRecycl
 
         // TODO: Format duration
         holder.durationTxt.setText(Integer.toString(episode.getDuration()));
+
+        // If the episode is downloaded, show save icon and disable the download button
+        if (episode.isDownloaded()) {
+            Glide.with(fragment)
+                    .load(R.drawable.ic_save_24dp)
+                    .into(holder.saveBtn);
+            holder.saveBtn.setEnabled(false);
+        } else {
+            Glide.with(fragment)
+                    .load(R.drawable.ic_file_download_24dp)
+                    .into(holder.saveBtn);
+            holder.saveBtn.setEnabled(true);
+        }
     }
 
     @Override
@@ -83,6 +101,7 @@ public class EpisodesRecyclerAdapter extends RecyclerView.Adapter<EpisodesRecycl
         ImageView img;
         TextView titleTxt;
         TextView descTxt;
+        ImageButton saveBtn;
         TextView podcastTxt;
         TextView durationTxt;
 
@@ -91,6 +110,7 @@ public class EpisodesRecyclerAdapter extends RecyclerView.Adapter<EpisodesRecycl
             img = itemView.findViewById(R.id.episode_img);
             titleTxt = itemView.findViewById(R.id.episode_title_txt);
             descTxt = itemView.findViewById(R.id.episode_desc_txt);
+            saveBtn = itemView.findViewById(R.id.episode_save_btn);
             podcastTxt = itemView.findViewById(R.id.episode_podcast_txt);
             durationTxt = itemView.findViewById(R.id.episode_duration_txt);
 
@@ -100,10 +120,17 @@ public class EpisodesRecyclerAdapter extends RecyclerView.Adapter<EpisodesRecycl
                 Podcast podcast = podcasts.get(episode.getParentUrl());
                 listener.onEpisodeClicked(episode, podcast);
             });
+
+            // Set onclick listener for save episode button
+            saveBtn.setOnClickListener(v -> {
+                PodcastEpisode episode = episodes.get(getAdapterPosition());
+                listener.onDownloadEpisodeClicked(episode);
+            });
         }
     }
 
     public interface OnEpisodeClickListener {
         void onEpisodeClicked(PodcastEpisode episode, Podcast podcast);
+        void onDownloadEpisodeClicked(PodcastEpisode episode);
     }
 }

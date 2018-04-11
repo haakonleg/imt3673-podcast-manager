@@ -1,9 +1,15 @@
 package haakoleg.imt3673_podcast_manager.models;
 
 import android.arch.persistence.room.Entity;
+import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+
+import java.io.File;
+import java.util.Objects;
+
+import haakoleg.imt3673_podcast_manager.MainActivity;
 
 @Entity(primaryKeys = {"parentUrl", "audioUrl"})
 public class PodcastEpisode implements Parcelable {
@@ -76,6 +82,14 @@ public class PodcastEpisode implements Parcelable {
         this.parentUrl = parentUrl;
     }
 
+    /**
+     * Check if this podcast episode is downloaded to external storage
+     * @return True if the podcast is downloaded, else false
+     */
+    public boolean isDownloaded() {
+        return new File(MainActivity.DOWNLOAD_DIR, Integer.toHexString(this.hashCode())).exists();
+    }
+
     public PodcastEpisode(Parcel in) {
         parentUrl = in.readString();
         title = in.readString();
@@ -112,5 +126,11 @@ public class PodcastEpisode implements Parcelable {
         dest.writeString(audioUrl);
         dest.writeInt(duration);
         dest.writeLong(updated);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(parentUrl, title, description,
+                link, audioUrl, duration, updated);
     }
 }

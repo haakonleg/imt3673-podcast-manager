@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
  * adds a runnable to the queue and executes the task when a thread is available
  */
 public class ThreadManager {
-    private static final ThreadManager singleInstance;
+    private static ThreadManager singleInstance;
 
     private final int NUMBER_OF_THREADS;
     private final int KEEPALIVE;
@@ -18,11 +18,10 @@ public class ThreadManager {
     private final BlockingQueue<Runnable> taskQueue;
     private final ThreadPoolExecutor poolExecutor;
 
-    static {
-        singleInstance = new ThreadManager();
-    }
-
     public static ThreadManager get() {
+        if (singleInstance == null) {
+            singleInstance = new ThreadManager();
+        }
         return singleInstance;
     }
 
@@ -45,5 +44,10 @@ public class ThreadManager {
 
     public void execute(Runnable task) {
         poolExecutor.execute(task);
+    }
+
+    public void interruptAll() {
+        poolExecutor.shutdownNow();
+        singleInstance = null;
     }
 }

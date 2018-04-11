@@ -115,7 +115,6 @@ public class EpisodePlaybackService extends MediaBrowserServiceCompat {
                         this, PlaybackStateCompat.ACTION_STOP))
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setSmallIcon(R.drawable.ic_play_arrow_24dp)
-                .setColor(ContextCompat.getColor(this, R.color.white))
                 .addAction(new NotificationCompat.Action(
                         R.drawable.ic_pause_24dp, getString(R.string.play_pause),
                         MediaButtonReceiver.buildMediaButtonPendingIntent(this,
