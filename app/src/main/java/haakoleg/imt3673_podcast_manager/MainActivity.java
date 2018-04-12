@@ -1,7 +1,12 @@
 package haakoleg.imt3673_podcast_manager;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
@@ -14,7 +19,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import android.view.View;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -128,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 // Parse and add these podcasts to the drawer menu
                 parsePodcasts(firebaseUrls, parsed -> {
+                    Log.d("From firebase", parsed.getUrl());
                     addPodcastToDrawer(parsed);
                     syncPodcast(parsed);
                 });
@@ -181,7 +192,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Add to array and drawer if it doesn't already exist
         if (this.podcasts.get(id) == null) {
             this.podcasts.put(id, podcast);
-            subscriptionsMenu.add(R.id.nav_subscriptions_submenu, id, Menu.NONE, podcast.getTitle()).setCheckable(true);
+            subscriptionsMenu.add(R.id.nav_subscriptions_submenu, id, Menu.NONE, podcast.getTitle());
+
+            // Set checkable for the item
+            MenuItem item = subscriptionsMenu.getItem(subscriptionsMenu.size() - 1);
+            item.setCheckable(true);
+
+            // Load podcast image into the item icon
+            Glide.with(this).asDrawable().load(podcast.getImage()).apply(new RequestOptions().centerCrop()).into(new SimpleTarget<Drawable>(50, 50) {
+                @Override
+                public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                    item.setIcon(resource);
+                }
+            });
+
+            // The icon won't show unless this is set on Android oreo for some reason
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                item.setIconTintMode(null);
+            }
         }
     }
 

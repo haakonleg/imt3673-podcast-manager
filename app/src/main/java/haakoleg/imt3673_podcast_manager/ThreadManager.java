@@ -1,9 +1,9 @@
 package haakoleg.imt3673_podcast_manager;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Class used for managing a pool of threads, contains method execute() which
@@ -13,7 +13,7 @@ public class ThreadManager {
     private static ThreadManager singleInstance;
 
     private final BlockingQueue<Runnable> taskQueue;
-    private final ThreadPoolExecutor poolExecutor;
+    private final ExecutorService poolExecutor;
 
     public static ThreadManager get() {
         if (singleInstance == null) {
@@ -26,18 +26,8 @@ public class ThreadManager {
      * Private constructor which instantiates the parameters and thread pool
      */
     private ThreadManager() {
-        // Set number of threads to number of processor cores
-        final int NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors();
-        // Set thread keep-alive time
-        final int KEEPALIVE = 10;
-
         taskQueue = new LinkedBlockingQueue<>();
-        poolExecutor = new ThreadPoolExecutor(
-                NUMBER_OF_THREADS,
-                NUMBER_OF_THREADS,
-                KEEPALIVE,
-                TimeUnit.SECONDS,
-                taskQueue);
+        poolExecutor = Executors.newCachedThreadPool();
     }
 
     public void execute(Runnable task) {
