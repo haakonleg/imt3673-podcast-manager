@@ -27,14 +27,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 
 import haakoleg.imt3673_podcast_manager.database.AppDatabase;
 import haakoleg.imt3673_podcast_manager.models.Podcast;
 import haakoleg.imt3673_podcast_manager.tasks.DeletePodcastsTask;
 import haakoleg.imt3673_podcast_manager.tasks.GetPodcastsTask;
 import haakoleg.imt3673_podcast_manager.tasks.ParsePodcastTask;
-import haakoleg.imt3673_podcast_manager.tasks.SyncPodcastsTask;
+import haakoleg.imt3673_podcast_manager.tasks.SyncPodcastTask;
 import haakoleg.imt3673_podcast_manager.utils.CheckNetwork;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -99,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // If there is a network connection
             if (CheckNetwork.hasNetwork(this)) {
                 // Parse and sync new episodes for locally stored podcasts
-                parsePodcasts(localUrls, this::syncPodcasts);
+                parsePodcasts(localUrls, this::syncPodcast);
                 syncWithFirebase(localUrls);
             }
         }, error -> {
@@ -114,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference()
                 .child("users").child(user.getUid()).child("subscriptions");
 
+        // Single value event listener for podcast URLs
         dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -127,11 +127,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
 
                 // Parse and add these podcasts to the drawer menu
-                parsePodcasts(firebaseUrls, parsedPodcasts -> {
-                    for (Podcast podcast : parsedPodcasts) {
-                        addPodcastToDrawer(podcast);
-                    }
-                    syncPodcasts(parsedPodcasts);
+                parsePodcasts(firebaseUrls, parsed -> {
+                    addPodcastToDrawer(parsed);
+                    syncPodcast(parsed);
                 });
             }
 
@@ -142,33 +140,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+    /**
+     * Starts the podcast parsing tasks on new threads for every podcast URL in the list
+     * @param podcastUrls List of podcast URLs to parse
+     * @param cb Callback for when a podcast has been parsed
+     */
     private void parsePodcasts(List<String> podcastUrls, ParseCallback cb) {
-        List<Podcast> parsedPodcasts = new ArrayList<>();
-
-        // Have to use iterator, otherwise it is impossible to access current index in a lambda
-        for (ListIterator<String> iter = podcastUrls.listIterator(); iter.hasNext();) {
-            int i = iter.nextIndex();
-            String url = iter.next();
-
-            ParsePodcastTask task = new ParsePodcastTask(this, url, parsedPodcast -> {
-                parsedPodcasts.add(parsedPodcast);
-                if (i == podcastUrls.size() - 1) {
-                    // Calls the callback after all podcasts have been parsed
-                    cb.onPodcastsParsed(parsedPodcasts);
-                }
-            }, error -> {
-                if (i == podcastUrls.size() - 1) {
-                    // Calls the callback after all podcasts have been parsed
-                    cb.onPodcastsParsed(parsedPodcasts);
-                }
+        for (String url : podcastUrls) {
+            ParsePodcastTask task = new ParsePodcastTask(this, url, cb::onPodcastParsed, error -> {
+                // TODO: Handle error
             });
             ThreadManager.get().execute(task);
         }
     }
 
-    private void syncPodcasts(List<Podcast> podcasts) {
-        SyncPodcastsTask task = new SyncPodcastsTask(this, podcasts, updatedEpisodes -> {
-
+    private void syncPodcast(Podcast podcast) {
+        SyncPodcastTask task = new SyncPodcastTask(this, podcast, updatedEpisodes -> {
+            Log.d("Synced", podcast.getUrl());
         }, error -> {
             // TODO: handle error
         });
@@ -202,12 +190,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     private void addPodcast(String url) {
         ParsePodcastTask task = new ParsePodcastTask(this, url, podcast ->  {
+            // Add podcast to drawer and sync
             addPodcastToDrawer(podcast);
-
-            // Sync this podcast
-            ArrayList<Podcast> toSync = new ArrayList<>();
-            toSync.add(podcast);
-            syncPodcasts(toSync);
+            syncPodcast(podcast);
         }, error -> {
             // TODO: Show better error
             Log.e("ERROR", Integer.toString(error));
@@ -295,6 +280,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private interface ParseCallback {
-        void onPodcastsParsed(List<Podcast> podcasts);
+        void onPodcastParsed(Podcast podcast);
     }
 }

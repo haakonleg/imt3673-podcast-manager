@@ -17,14 +17,14 @@ import haakoleg.imt3673_podcast_manager.database.AppDatabase;
 import haakoleg.imt3673_podcast_manager.models.Podcast;
 import haakoleg.imt3673_podcast_manager.models.PodcastEpisode;
 
-public class SyncPodcastsTask extends Task<List<PodcastEpisode>> {
+public class SyncPodcastTask extends Task<List<PodcastEpisode>> {
     private final Context context;
-    private final List<Podcast> podcasts;
+    private final Podcast podcast;
 
-    public SyncPodcastsTask(Context context, List<Podcast> podcasts, OnSuccessListener<List<PodcastEpisode>> successListener, OnErrorListener errorListener) {
+    public SyncPodcastTask(Context context, Podcast podcast, OnSuccessListener<List<PodcastEpisode>> successListener, OnErrorListener errorListener) {
         super(successListener, errorListener);
         this.context = context;
-        this.podcasts = podcasts;
+        this.podcast = podcast;
     }
 
     @Override
@@ -32,18 +32,16 @@ public class SyncPodcastsTask extends Task<List<PodcastEpisode>> {
         // Save to SQLite database
         AppDatabase db = AppDatabase.getDb(context);
 
-        List<PodcastEpisode> updatedEpisodes = new ArrayList<>();
-        for (Podcast podcast : podcasts) {
-            // Podcast is not in database, so add it
-            if (db.podcastDAO().getPodcast(podcast.getUrl()) == null) {
-                db.podcastDAO().insertPodcast(podcast);
-            }
-            syncPodcastWithFirebase(podcast);
-            updatedEpisodes.addAll(syncUpdatedEpisodes(db, podcast));
+        // Podcast is not in database, so add it
+        if (db.podcastDAO().getPodcast(podcast.getUrl()) == null) {
+            db.podcastDAO().insertPodcast(podcast);
         }
 
+        // Sync podcast with firebase
+        syncPodcastWithFirebase(podcast);
+
         // Sync updated episodes
-        resultObject = updatedEpisodes;
+        resultObject = syncUpdatedEpisodes(db, podcast);
         return SUCCESSFUL;
     }
 
