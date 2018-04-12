@@ -1,7 +1,5 @@
 package haakoleg.imt3673_podcast_manager;
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Environment;
@@ -19,7 +17,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
-import android.view.View;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -50,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final File DOWNLOAD_DIR = new File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "/podcastmanager/");
 
-    private DrawerLayout drawerLayout;
+    public DrawerLayout drawerLayout;
     private SubMenu subscriptionsMenu;
 
     // This contains all podcasts the user has saved
@@ -189,17 +188,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void addPodcastToDrawer(Podcast podcast) {
         // Uses hashcode as the key for the podcast in the array
         int id = podcast.hashCode();
+
         // Add to array and drawer if it doesn't already exist
         if (this.podcasts.get(id) == null) {
             this.podcasts.put(id, podcast);
             subscriptionsMenu.add(R.id.nav_subscriptions_submenu, id, Menu.NONE, podcast.getTitle());
 
-            // Set checkable for the item
+            // Set checkable and long click listener for podcast item
             MenuItem item = subscriptionsMenu.getItem(subscriptionsMenu.size() - 1);
             item.setCheckable(true);
 
             // Load podcast image into the item icon
-            Glide.with(this).asDrawable().load(podcast.getImage()).apply(new RequestOptions().centerCrop()).into(new SimpleTarget<Drawable>(50, 50) {
+            Glide.with(this).asDrawable().load(podcast.getImage()).apply(
+                    new RequestOptions().centerCrop()).into(new SimpleTarget<Drawable>(50, 50) {
                 @Override
                 public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
                     item.setIcon(resource);
@@ -239,15 +240,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.main_content, fragment)
                 .addToBackStack(tag).commit();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            drawerLayout.openDrawer(GravityCompat.START);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     /**

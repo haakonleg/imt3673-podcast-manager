@@ -68,9 +68,7 @@ public class EpisodesRecyclerAdapter extends RecyclerView.Adapter<EpisodesRecycl
         holder.titleTxt.setText(episode.getTitle());
         holder.descTxt.setText(episode.getDescription());
         holder.podcastTxt.setText(podcast.getTitle());
-
-        // TODO: Format duration
-        holder.durationTxt.setText(Integer.toString(episode.getDuration()));
+        holder.durationTxt.setText(episode.getFormattedDuration());
 
         // If the episode is downloaded, show save icon and disable the download button
         if (episode.isDownloaded()) {

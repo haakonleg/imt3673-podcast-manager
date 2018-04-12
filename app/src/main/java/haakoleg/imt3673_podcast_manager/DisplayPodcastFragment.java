@@ -5,8 +5,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -46,6 +50,7 @@ public class DisplayPodcastFragment extends Fragment implements ChildEventListen
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         // Get bundle from savedInstanceState if the fragment
         // is being recreated, or from getArguments if new fragment
@@ -96,6 +101,25 @@ public class DisplayPodcastFragment extends Fragment implements ChildEventListen
         DatabaseReference dbRef =
                 FirebaseDatabase.getInstance().getReference().child("comments").child(podcastId);
         dbRef.addChildEventListener(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        MainActivity mainActivity = (MainActivity) getActivity();
+        mainActivity.getSupportActionBar().setTitle(podcast.getTitle());
+        mainActivity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_24dp);
+        mainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            getActivity().getSupportFragmentManager().popBackStack();
+            return true;
+        }
+        return false;
     }
 
     @Override

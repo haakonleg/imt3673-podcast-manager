@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import haakoleg.imt3673_podcast_manager.MainActivity;
 
@@ -79,6 +80,13 @@ public class PodcastEpisode implements Parcelable {
 
     public void setParentUrl(String parentUrl) {
         this.parentUrl = parentUrl;
+    }
+
+    public String getFormattedDuration() {
+        if (duration != 0) {
+            return Long.toString(TimeUnit.SECONDS.toMinutes(duration)) + " min";
+        }
+        return "";
     }
 
     /**
