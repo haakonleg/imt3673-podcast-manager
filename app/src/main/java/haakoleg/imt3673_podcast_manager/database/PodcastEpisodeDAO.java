@@ -21,6 +21,9 @@ public interface PodcastEpisodeDAO {
     @Query("SELECT updated FROM PodcastEpisode WHERE parentUrl = :parentUrl ORDER BY updated DESC LIMIT 1")
     long getLastUpdated(String parentUrl);
 
+    @Query("DELETE FROM PodcastEpisode")
+    void deleteAll();
+
     @Insert
     void insertEpisode(PodcastEpisode episode);
 

@@ -20,6 +20,9 @@ public interface PodcastDAO {
     @Query("SELECT * FROM Podcast")
     List<Podcast> getAllPodcasts();
 
+    @Query("DELETE FROM Podcast")
+    void deleteAll();
+
     @Insert
     void insertPodcast(Podcast podcast);
 

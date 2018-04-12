@@ -1,6 +1,7 @@
 package haakoleg.imt3673_podcast_manager;
 
 import android.os.Environment;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,12 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,9 +31,10 @@ import java.util.List;
 import java.util.ListIterator;
 
 import haakoleg.imt3673_podcast_manager.models.Podcast;
+import haakoleg.imt3673_podcast_manager.tasks.DeletePodcastsTask;
 import haakoleg.imt3673_podcast_manager.tasks.GetPodcastsTask;
 import haakoleg.imt3673_podcast_manager.tasks.ParsePodcastTask;
-import haakoleg.imt3673_podcast_manager.tasks.SyncPodcastTask;
+import haakoleg.imt3673_podcast_manager.tasks.SyncPodcastsTask;
 import haakoleg.imt3673_podcast_manager.utils.CheckNetwork;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -62,11 +70,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         subscriptionsMenu = navMenu.addSubMenu(R.id.nav_subscriptions, R.id.nav_subscriptions_submenu, Menu.NONE, R.string.my_subscriptions);
 
         this.podcasts = new HashMap<>();
-
-        // Add stored podcasts to the drawer
         initialize();
     }
 
+    /**
+     * Interrupt all running threads when the activity is destroyed
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -79,42 +88,96 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     private void initialize() {
         GetPodcastsTask task = new GetPodcastsTask(this, podcasts -> {
+            // Add locally stored podcasts to the drawer menu
+            List<String> localUrls = new ArrayList<>();
             for (Podcast podcast : podcasts) {
                 addPodcastToDrawer(podcast);
+                localUrls.add(podcast.getUrl());
             }
+
+            // If there is a network connection
             if (CheckNetwork.hasNetwork(this)) {
-                syncPodcasts(podcasts);
+                // Parse and sync new episodes for locally stored podcasts
+                parsePodcasts(localUrls, this::syncPodcasts);
+                syncWithFirebase(localUrls);
             }
-            // Show home fragment containing recent episodes from all podcasts
-            ShowEpisodesFragment fragment = ShowEpisodesFragment.newInstance(new ArrayList<>(this.podcasts.values()), 50);
-            getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment).commit();
         }, error -> {
             // TODO: Handle error
         });
         ThreadManager.get().execute(task);
     }
 
-    private void syncPodcasts(List<Podcast> podcasts) {
-        // Have to use iterator, otherwise it is impossible to access current index in a lambda
-        for (ListIterator<Podcast> iter = podcasts.listIterator(); iter.hasNext();) {
-            int i = iter.nextIndex();
-            Podcast podcast = iter.next();
+    private void syncWithFirebase(List<String> localUrls) {
+        // Check if there are podcast urls from firebase for the user that has not been added to the local database
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference()
+                .child("users").child(user.getUid()).child("subscriptions");
 
-            ParsePodcastTask task = new ParsePodcastTask(this, podcast.getUrl(), parsedPodcast -> {
-                SyncPodcastTask syncTask = new SyncPodcastTask(this, parsedPodcast, updatedEpisodes -> {
-                    Log.e("Synced", podcast.getUrl());
-                    if (i == podcasts.size() - 1) {
-                        // TODO: Notify when all podcasts are synced
+        dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                List<String> firebaseUrls = new ArrayList<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    String podcastUrl = (String) snapshot.getValue();
+                    if (!localUrls.contains(podcastUrl)) {
+                        firebaseUrls.add(podcastUrl);
                     }
-                }, error -> {
-                    // TODO: Handle error
+                }
+
+                // Parse and add these podcasts to the drawer menu
+                parsePodcasts(firebaseUrls, parsedPodcasts -> {
+                    for (Podcast podcast : parsedPodcasts) {
+                        addPodcastToDrawer(podcast);
+                    }
+                    syncPodcasts(parsedPodcasts);
                 });
-                ThreadManager.get().execute(syncTask);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void parsePodcasts(List<String> podcastUrls, ParseCallback cb) {
+        List<Podcast> parsedPodcasts = new ArrayList<>();
+
+        // Have to use iterator, otherwise it is impossible to access current index in a lambda
+        for (ListIterator<String> iter = podcastUrls.listIterator(); iter.hasNext();) {
+            int i = iter.nextIndex();
+            String url = iter.next();
+
+            ParsePodcastTask task = new ParsePodcastTask(this, url, parsedPodcast -> {
+                parsedPodcasts.add(parsedPodcast);
+                if (i == podcastUrls.size() - 1) {
+                    // Calls the callback after all podcasts have been parsed
+                    cb.onPodcastsParsed(parsedPodcasts);
+                }
             }, error -> {
-                // TODO: Handle error
+                if (i == podcastUrls.size() - 1) {
+                    // Calls the callback after all podcasts have been parsed
+                    cb.onPodcastsParsed(parsedPodcasts);
+                }
             });
             ThreadManager.get().execute(task);
         }
+    }
+
+    private void syncPodcasts(List<Podcast> podcasts) {
+        SyncPodcastsTask task = new SyncPodcastsTask(this, podcasts, updatedEpisodes -> {
+
+        }, error -> {
+            // TODO: handle error
+        });
+        ThreadManager.get().execute(task);
+    }
+
+    private void showHomeFragment() {
+        // Show home fragment containing recent episodes from all podcasts
+        ShowEpisodesFragment fragment = ShowEpisodesFragment.newInstance(new ArrayList<>(this.podcasts.values()), 50);
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment).commit();
     }
 
     /**
@@ -174,6 +237,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     /**
+     * Deletes all locally saved podcasts in the SQLite database and signs the user out from firebase
+     */
+    private void signOut() {
+        DeletePodcastsTask task = new DeletePodcastsTask(this, res -> {
+            FirebaseAuth.getInstance().signOut();
+            finish();
+        }, error -> {
+            // TODO: Handle error
+        });
+        ThreadManager.get().execute(task);
+    }
+
+    /**
      * Fired when an item is selected in the navigation drawer
      * @param item Reference to the selected MenuItem
      * @return True if a valid item was clicked
@@ -200,8 +276,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 displayContent(ShowEpisodesFragment.newInstanceDownloaded(new ArrayList<>(podcasts.values())), "DownloadedEpisodes");
                 break;
             case R.id.nav_logout:
-                FirebaseAuth.getInstance().signOut();
-                finish();
+                signOut();
                 break;
             default:
                 // Selected a podcast
@@ -216,5 +291,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         drawerLayout.closeDrawers();
         return true;
+    }
+
+    private interface ParseCallback {
+        void onPodcastsParsed(List<Podcast> podcasts);
     }
 }

@@ -1,8 +1,6 @@
 package haakoleg.imt3673_podcast_manager.tasks;
 
 import android.content.Context;
-import android.util.Base64;
-import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -19,14 +17,14 @@ import haakoleg.imt3673_podcast_manager.database.AppDatabase;
 import haakoleg.imt3673_podcast_manager.models.Podcast;
 import haakoleg.imt3673_podcast_manager.models.PodcastEpisode;
 
-public class SyncPodcastTask extends Task<List<PodcastEpisode>> {
+public class SyncPodcastsTask extends Task<List<PodcastEpisode>> {
     private Context context;
-    private Podcast podcast;
+    private List<Podcast> podcasts;
 
-    public SyncPodcastTask(Context context, Podcast podcast, OnSuccessListener<List<PodcastEpisode>> successListener, OnErrorListener errorListener) {
+    public SyncPodcastsTask(Context context, List<Podcast> podcasts, OnSuccessListener<List<PodcastEpisode>> successListener, OnErrorListener errorListener) {
         super(successListener, errorListener);
         this.context = context;
-        this.podcast = podcast;
+        this.podcasts = podcasts;
     }
 
     @Override
@@ -34,15 +32,18 @@ public class SyncPodcastTask extends Task<List<PodcastEpisode>> {
         // Save to SQLite database
         AppDatabase db = AppDatabase.getDb(context);
 
-        // Podcast is not in database, so add it
-        if (db.podcastDAO().getPodcast(this.podcast.getUrl()) == null) {
-            db.podcastDAO().insertPodcast(this.podcast);
+        List<PodcastEpisode> updatedEpisodes = new ArrayList<>();
+        for (Podcast podcast : podcasts) {
+            // Podcast is not in database, so add it
+            if (db.podcastDAO().getPodcast(podcast.getUrl()) == null) {
+                db.podcastDAO().insertPodcast(podcast);
+            }
+            syncPodcastWithFirebase(podcast);
+            updatedEpisodes.addAll(syncUpdatedEpisodes(db, podcast));
         }
 
-        syncPodcastWithFirebase(this.podcast);
-
         // Sync updated episodes
-        resultObject = syncUpdatedEpisodes(db, this.podcast);
+        resultObject = updatedEpisodes;
         return SUCCESSFUL;
     }
 

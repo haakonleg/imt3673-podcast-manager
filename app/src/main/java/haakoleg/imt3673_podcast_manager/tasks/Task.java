@@ -43,13 +43,9 @@ public abstract class Task<T> implements Runnable {
         int result = doTask();
         // Task was successful, call back to UI thread
         if (result == SUCCESSFUL) {
-            if (resultObject == null) {
-                Log.e("Task", "WARNING: The task did not set a resultObject but returned successful");
-            } else {
-                mainHandler.post(() -> {
-                    successListener.onSuccess(resultObject);
-                });
-            }
+            mainHandler.post(() -> {
+                successListener.onSuccess(resultObject);
+            });
         } else {
             // Task returned an error
             mainHandler.post(() -> {
