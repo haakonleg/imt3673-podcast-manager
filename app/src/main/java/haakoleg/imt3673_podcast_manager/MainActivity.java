@@ -1,7 +1,6 @@
 package haakoleg.imt3673_podcast_manager;
 
 import android.os.Environment;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -30,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 
+import haakoleg.imt3673_podcast_manager.database.AppDatabase;
 import haakoleg.imt3673_podcast_manager.models.Podcast;
 import haakoleg.imt3673_podcast_manager.tasks.DeletePodcastsTask;
 import haakoleg.imt3673_podcast_manager.tasks.GetPodcastsTask;
@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final File DOWNLOAD_DIR = new File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "/podcastmanager/");
 
-    private NavigationView navView;
     private DrawerLayout drawerLayout;
     private SubMenu subscriptionsMenu;
 
@@ -61,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_24dp);
 
         // Find elements
-        navView = findViewById(R.id.nav_view);
+        NavigationView navView = findViewById(R.id.nav_view);
         drawerLayout = findViewById(R.id.drawer_layout);
 
         // Set up navigation view
@@ -80,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onDestroy() {
         super.onDestroy();
         ThreadManager.get().interruptAll();
+        AppDatabase.destroy();
     }
 
     /**
@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 addPodcastToDrawer(podcast);
                 localUrls.add(podcast.getUrl());
             }
+            showHomeFragment();
 
             // If there is a network connection
             if (CheckNetwork.hasNetwork(this)) {

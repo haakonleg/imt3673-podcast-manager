@@ -24,4 +24,9 @@
     <string name="post_comment">Post Comment</string>
     <string name="comment_post">Post</string>
     <string name="error_no_internet">There is no internet connectivity</string>
+    <string name="comment">Comment</string>
+    <string name="rating">Rating</string>
+    <string name="comments">Comments</string>
+    <string name="popular">Popular</string>
+    <string name="top_rated">Top Rated</string>
 </resources>

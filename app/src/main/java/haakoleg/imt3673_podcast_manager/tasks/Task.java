@@ -1,12 +1,7 @@
 package haakoleg.imt3673_podcast_manager.tasks;
 
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
-import android.util.Log;
-
-import haakoleg.imt3673_podcast_manager.ThreadManager;
 
 /**
  * Abstract class which is supposed to be implemented by other tasks. Tasks extending this class
@@ -20,9 +15,9 @@ public abstract class Task<T> implements Runnable {
     public static final int ERROR_DOWNLOAD = 2;
     public static final int ERROR_PARSE = 3;
 
-    private Handler mainHandler;
-    private OnSuccessListener<T> successListener;
-    private OnErrorListener errorListener;
+    private final Handler mainHandler;
+    private final OnSuccessListener<T> successListener;
+    private final OnErrorListener errorListener;
 
     protected T resultObject;
 
@@ -43,23 +38,15 @@ public abstract class Task<T> implements Runnable {
         int result = doTask();
         // Task was successful, call back to UI thread
         if (result == SUCCESSFUL) {
-            mainHandler.post(() -> {
-                successListener.onSuccess(resultObject);
-            });
+            mainHandler.post(() -> successListener.onSuccess(resultObject));
         } else {
             // Task returned an error
-            mainHandler.post(() -> {
-                errorListener.onError(result);
-            });
+            mainHandler.post(() -> errorListener.onError(result));
         }
     }
 
     // Must be overridden by tasks extending this class
     protected abstract int doTask();
-
-    public void execute() {
-        ThreadManager.get().execute(this);
-    }
 
     public interface OnSuccessListener<T> {
         void onSuccess(T result);

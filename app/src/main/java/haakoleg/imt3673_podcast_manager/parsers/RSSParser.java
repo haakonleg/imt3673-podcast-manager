@@ -11,7 +11,7 @@ import haakoleg.imt3673_podcast_manager.models.Podcast;
 import haakoleg.imt3673_podcast_manager.models.PodcastEpisode;
 
 public class RSSParser extends Parser {
-    private SimpleDateFormat sdf;
+    private final SimpleDateFormat sdf;
 
     public RSSParser(XmlPullParser parser) {
         super(parser);
@@ -69,7 +69,7 @@ public class RSSParser extends Parser {
             } else if (tagName.equalsIgnoreCase("pubDate")) {
                 podcast.setUpdated(readDate(parser, sdf));
             } else if (tagName.equalsIgnoreCase("item")) {
-                podcast.addEpisode(readEpisode(parser, podcast));
+                podcast.addEpisode(readEpisode(parser));
             } else {
                 skip(parser);
             }
@@ -77,7 +77,7 @@ public class RSSParser extends Parser {
 
     }
 
-    private PodcastEpisode readEpisode(XmlPullParser parser, Podcast podcast) throws XmlPullParserException, IOException {
+    private PodcastEpisode readEpisode(XmlPullParser parser) throws XmlPullParserException, IOException {
         PodcastEpisode episode = new PodcastEpisode();
 
         while (parser.next() != XmlPullParser.END_TAG) {

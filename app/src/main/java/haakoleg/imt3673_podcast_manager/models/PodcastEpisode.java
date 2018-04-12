@@ -1,7 +1,6 @@
 package haakoleg.imt3673_podcast_manager.models;
 
 import android.arch.persistence.room.Entity;
-import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;

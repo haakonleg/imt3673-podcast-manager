@@ -18,8 +18,8 @@ import haakoleg.imt3673_podcast_manager.models.Podcast;
 import haakoleg.imt3673_podcast_manager.models.PodcastEpisode;
 
 public class SyncPodcastsTask extends Task<List<PodcastEpisode>> {
-    private Context context;
-    private List<Podcast> podcasts;
+    private final Context context;
+    private final List<Podcast> podcasts;
 
     public SyncPodcastsTask(Context context, List<Podcast> podcasts, OnSuccessListener<List<PodcastEpisode>> successListener, OnErrorListener errorListener) {
         super(successListener, errorListener);

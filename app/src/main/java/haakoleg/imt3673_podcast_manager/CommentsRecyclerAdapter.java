@@ -13,7 +13,7 @@ import java.util.List;
 import haakoleg.imt3673_podcast_manager.models.Comment;
 
 public class CommentsRecyclerAdapter extends RecyclerView.Adapter<CommentsRecyclerAdapter.ViewHolder> {
-    private List<Comment> comments;
+    private final List<Comment> comments;
 
     public CommentsRecyclerAdapter(List<Comment> comments) {
         this.comments = comments;
@@ -47,9 +47,9 @@ public class CommentsRecyclerAdapter extends RecyclerView.Adapter<CommentsRecycl
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        TextView usernameTxt;
-        RatingBar rating;
-        TextView commentTxt;
+        final TextView usernameTxt;
+        final RatingBar rating;
+        final TextView commentTxt;
 
         ViewHolder(View itemView) {
             super(itemView);

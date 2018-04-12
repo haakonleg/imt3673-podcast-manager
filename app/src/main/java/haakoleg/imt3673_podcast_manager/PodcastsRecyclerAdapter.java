@@ -20,11 +20,11 @@ import java.util.List;
 import haakoleg.imt3673_podcast_manager.models.Podcast;
 
 public class PodcastsRecyclerAdapter extends RecyclerView.Adapter<PodcastsRecyclerAdapter.ViewHolder> {
-    private Fragment fragment;
-    private List<Podcast> podcasts;
-    private List<Integer> subscriberCounts;
-    private List<Integer> ratings;
-    private OnPodcastClickListener listener;
+    private final Fragment fragment;
+    private final List<Podcast> podcasts;
+    private final List<Integer> subscriberCounts;
+    private final List<Integer> ratings;
+    private final OnPodcastClickListener listener;
 
     public PodcastsRecyclerAdapter(
             Fragment fragment, List<Podcast> podcasts, List<Integer> subscriberCounts, List<Integer> ratings, OnPodcastClickListener listener) {
@@ -65,11 +65,11 @@ public class PodcastsRecyclerAdapter extends RecyclerView.Adapter<PodcastsRecycl
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView podcastImg;
-        TextView podcastTitleTxt;
-        TextView podcastCategoryTxt;
-        RatingBar podcastRating;
-        TextView podcastSubscribersTxt;
+        final ImageView podcastImg;
+        final TextView podcastTitleTxt;
+        final TextView podcastCategoryTxt;
+        final RatingBar podcastRating;
+        final TextView podcastSubscribersTxt;
 
         public ViewHolder(View itemView) {
             super(itemView);

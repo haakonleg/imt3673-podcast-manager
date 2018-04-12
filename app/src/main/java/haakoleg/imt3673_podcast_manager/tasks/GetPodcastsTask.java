@@ -8,7 +8,7 @@ import haakoleg.imt3673_podcast_manager.database.AppDatabase;
 import haakoleg.imt3673_podcast_manager.models.Podcast;
 
 public class GetPodcastsTask extends Task<List<Podcast>> {
-    private Context context;
+    private final Context context;
 
     public GetPodcastsTask(Context context, OnSuccessListener<List<Podcast>> successListener, OnErrorListener errorListener) {
         super(successListener, errorListener);

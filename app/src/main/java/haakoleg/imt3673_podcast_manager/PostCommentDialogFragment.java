@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RatingBar;
@@ -50,7 +48,7 @@ public class PostCommentDialogFragment extends DialogFragment {
 
         podcastId = bundle.getString("id");
 
-        view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_post_comment, null);
+        view = View.inflate(getActivity(), R.layout.dialog_post_comment, null);
         commentInput = view.findViewById(R.id.comment_input);
         ratingBar = view.findViewById(R.id.rating_input);
     }

@@ -24,7 +24,7 @@ public class AddPodcastDialogFragment extends DialogFragment {
         super.onCreate(savedInstanceState);
 
         LayoutInflater inflater = LayoutInflater.from(getActivity());
-        view = inflater.inflate(R.layout.dialog_add_podcast, null);
+        view = View.inflate(getActivity(), R.layout.dialog_add_podcast, null);
         urlInput = view.findViewById(R.id.url_input);
     }
 

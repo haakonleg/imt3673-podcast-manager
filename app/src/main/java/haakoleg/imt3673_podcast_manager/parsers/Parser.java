@@ -18,7 +18,7 @@ import haakoleg.imt3673_podcast_manager.models.Podcast;
  * and skipping tags.
  */
 public abstract class Parser {
-    protected XmlPullParser parser;
+    protected final XmlPullParser parser;
 
     protected Parser(XmlPullParser parser) {
         this.parser = parser;

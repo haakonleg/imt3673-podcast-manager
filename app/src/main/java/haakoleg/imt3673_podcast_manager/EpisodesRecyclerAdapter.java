@@ -1,10 +1,8 @@
 package haakoleg.imt3673_podcast_manager;
 
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +13,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,10 +24,10 @@ import haakoleg.imt3673_podcast_manager.models.PodcastEpisode;
  */
 
 public class EpisodesRecyclerAdapter extends RecyclerView.Adapter<EpisodesRecyclerAdapter.ViewHolder> {
-    private Fragment fragment;
-    private OnEpisodeClickListener listener;
-    private HashMap<String, Podcast> podcasts;
-    private List<PodcastEpisode> episodes;
+    private final Fragment fragment;
+    private final OnEpisodeClickListener listener;
+    private final HashMap<String, Podcast> podcasts;
+    private final List<PodcastEpisode> episodes;
 
     /**
      * Adapter constructor
@@ -98,12 +95,12 @@ public class EpisodesRecyclerAdapter extends RecyclerView.Adapter<EpisodesRecycl
      * ViewHolder for layout "view_episode_item"
      */
     class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView img;
-        TextView titleTxt;
-        TextView descTxt;
-        ImageButton saveBtn;
-        TextView podcastTxt;
-        TextView durationTxt;
+        final ImageView img;
+        final TextView titleTxt;
+        final TextView descTxt;
+        final ImageButton saveBtn;
+        final TextView podcastTxt;
+        final TextView durationTxt;
 
         ViewHolder(View itemView) {
             super(itemView);

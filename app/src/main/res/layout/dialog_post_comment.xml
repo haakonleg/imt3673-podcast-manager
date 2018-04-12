@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Comment" />
+        android:text="@string/comment" />
 
     <EditText
         android:id="@+id/comment_input"
@@ -21,7 +21,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Rating" />
+        android:text="@string/rating" />
 
     <RatingBar
         android:id="@+id/rating_input"

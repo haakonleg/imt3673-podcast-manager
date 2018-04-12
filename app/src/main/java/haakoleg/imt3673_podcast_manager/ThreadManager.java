@@ -12,9 +12,6 @@ import java.util.concurrent.TimeUnit;
 public class ThreadManager {
     private static ThreadManager singleInstance;
 
-    private final int NUMBER_OF_THREADS;
-    private final int KEEPALIVE;
-
     private final BlockingQueue<Runnable> taskQueue;
     private final ThreadPoolExecutor poolExecutor;
 
@@ -30,9 +27,10 @@ public class ThreadManager {
      */
     private ThreadManager() {
         // Set number of threads to number of processor cores
-        NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors();
+        final int NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors();
         // Set thread keep-alive time
-        KEEPALIVE = 10;
+        final int KEEPALIVE = 10;
+
         taskQueue = new LinkedBlockingQueue<>();
         poolExecutor = new ThreadPoolExecutor(
                 NUMBER_OF_THREADS,

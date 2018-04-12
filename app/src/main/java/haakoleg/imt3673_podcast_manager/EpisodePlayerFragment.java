@@ -194,14 +194,19 @@ public class EpisodePlayerFragment extends Fragment {
         playBtn.setOnClickListener(v -> {
             MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
             int state = controller.getPlaybackState().getState();
-            if (state == PlaybackStateCompat.STATE_PLAYING) {
-                controller.getTransportControls().pause();
-            } else if (state == PlaybackStateCompat.STATE_PAUSED) {
-                controller.getTransportControls().play();
-            } else if (state == PlaybackStateCompat.STATE_STOPPED) {
-                progressBar.setVisibility(View.VISIBLE);
-                startPlaybackService();
-                mediaBrowser.connect();
+
+            switch (state) {
+                case PlaybackStateCompat.STATE_PLAYING:
+                    controller.getTransportControls().pause();
+                    break;
+                case PlaybackStateCompat.STATE_PAUSED:
+                    controller.getTransportControls().play();
+                    break;
+                case PlaybackStateCompat.STATE_STOPPED:
+                    progressBar.setVisibility(View.VISIBLE);
+                    startPlaybackService();
+                    mediaBrowser.connect();
+                    break;
             }
         });
 
@@ -279,42 +284,47 @@ public class EpisodePlayerFragment extends Fragment {
     private class ControllerCallback extends MediaControllerCompat.Callback {
         @Override
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
-            if (state.getState() == EpisodePlaybackService.STATE_PREPARED) {
-                // Audio is ready to play
-                bindPlayerControls();
-                MediaControllerCompat.getMediaController(getActivity()).getTransportControls().play();
-                MediaControllerCompat.getMediaController(getActivity()).getTransportControls().sendCustomAction("StartUpdater", null);
-                progressBar.setVisibility(View.GONE);
-            } else if (state.getState() == PlaybackStateCompat.STATE_PLAYING) {
-                // Audio is playing
-                progressBar.setVisibility(View.GONE);
+            switch (state.getState()) {
+                case EpisodePlaybackService.STATE_PREPARED:
+                    // Audio is ready to play
+                    bindPlayerControls();
+                    MediaControllerCompat.getMediaController(getActivity()).getTransportControls().play();
+                    MediaControllerCompat.getMediaController(getActivity()).getTransportControls().sendCustomAction("StartUpdater", null);
+                    break;
+                case PlaybackStateCompat.STATE_PLAYING:
+                    // Audio is playing
+                    progressBar.setVisibility(View.GONE);
 
-                // Get duration and position in the audio
-                final long duration = MediaControllerCompat.getMediaController(getActivity()).getMetadata().getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
-                final long position = state.getPosition();
+                    // Get duration and position in the audio
+                    final long duration = MediaControllerCompat.getMediaController(getActivity()).getMetadata().getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+                    final long position = state.getPosition();
 
-                // Update seekbar
-                seekBar.setMax((int) duration / 1000);
-                seekBar.setProgress((int) state.getPosition() / 1000);
+                    // Update seekbar
+                    seekBar.setMax((int) duration / 1000);
+                    seekBar.setProgress((int) state.getPosition() / 1000);
 
-                // Update duration text
-                // TODO: Maybe improve
-                final String formattedDuration = String.format(Locale.getDefault(), "%02d:%02d/%02d:%02d",
-                        TimeUnit.MILLISECONDS.toMinutes(position), TimeUnit.MILLISECONDS.toSeconds(position) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(position)),
-                        TimeUnit.MILLISECONDS.toMinutes(duration), TimeUnit.MILLISECONDS.toSeconds(duration) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration)));
-                durationTxt.setText(formattedDuration);
+                    // Update duration text
+                    // TODO: Maybe improve
+                    final String formattedDuration = String.format(Locale.getDefault(), "%02d:%02d/%02d:%02d",
+                            TimeUnit.MILLISECONDS.toMinutes(position), TimeUnit.MILLISECONDS.toSeconds(position) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(position)),
+                            TimeUnit.MILLISECONDS.toMinutes(duration), TimeUnit.MILLISECONDS.toSeconds(duration) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration)));
+                    durationTxt.setText(formattedDuration);
 
-                playBtn.setImageDrawable(getActivity().getDrawable(R.drawable.ic_pause_24dp));
-            } else if (state.getState() == PlaybackStateCompat.STATE_BUFFERING) {
-                // Audio is buffering
-                progressBar.setVisibility(View.VISIBLE);
-            } else if (state.getState() == PlaybackStateCompat.STATE_PAUSED) {
-                // Audio is paused
-                playBtn.setImageDrawable(getActivity().getDrawable(R.drawable.ic_play_arrow_24dp));
-            } else if (state.getState() == PlaybackStateCompat.STATE_STOPPED) {
-                // Audio is stopped, disconnect the activity from the playback service
-                playBtn.setImageDrawable(getActivity().getDrawable(R.drawable.ic_play_arrow_24dp));
-                mediaBrowser.disconnect();
+                    playBtn.setImageDrawable(getActivity().getDrawable(R.drawable.ic_pause_24dp));
+                    break;
+                case PlaybackStateCompat.STATE_BUFFERING:
+                    // Audio is buffering
+                    progressBar.setVisibility(View.VISIBLE);
+                    break;
+                case PlaybackStateCompat.STATE_PAUSED:
+                    // Audio is paused
+                    playBtn.setImageDrawable(getActivity().getDrawable(R.drawable.ic_play_arrow_24dp));
+                    break;
+                case PlaybackStateCompat.STATE_STOPPED:
+                    // Audio is stopped, disconnect the activity from the playback service
+                    playBtn.setImageDrawable(getActivity().getDrawable(R.drawable.ic_play_arrow_24dp));
+                    mediaBrowser.disconnect();
+                    break;
             }
         }
     }

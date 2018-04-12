@@ -9,7 +9,7 @@ import haakoleg.imt3673_podcast_manager.database.AppDatabase;
 import haakoleg.imt3673_podcast_manager.models.PodcastEpisode;
 
 public class GetDownloadedEpisodesTask extends Task<List<PodcastEpisode>> {
-    private Context context;
+    private final Context context;
 
     public GetDownloadedEpisodesTask(Context context, OnSuccessListener<List<PodcastEpisode>> successListener, OnErrorListener errorListener) {
         super(successListener, errorListener);

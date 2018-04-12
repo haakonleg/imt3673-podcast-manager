@@ -17,8 +17,8 @@ import haakoleg.imt3673_podcast_manager.parsers.PodcastParser;
 import haakoleg.imt3673_podcast_manager.utils.CheckNetwork;
 
 public class ParsePodcastTask extends Task<Podcast> {
-    private Context context;
-    private String url;
+    private final Context context;
+    private final String url;
 
     public ParsePodcastTask(Context context, String url, OnSuccessListener<Podcast> successListener, OnErrorListener errorListener) {
         super(successListener, errorListener);

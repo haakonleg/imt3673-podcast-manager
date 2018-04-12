@@ -5,10 +5,11 @@ import android.content.Context;
 import haakoleg.imt3673_podcast_manager.database.AppDatabase;
 
 public class DeletePodcastsTask extends Task<Void> {
-    private Context context;
+    private final Context context;
 
     public DeletePodcastsTask(Context context, OnSuccessListener<Void> successListener, OnErrorListener errorListener) {
         super(successListener, errorListener);
+        this.context = context;
     }
 
     @Override

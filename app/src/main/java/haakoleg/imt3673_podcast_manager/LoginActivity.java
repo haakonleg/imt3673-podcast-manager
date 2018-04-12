@@ -10,15 +10,9 @@ import android.widget.EditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import java.util.List;
-
-import haakoleg.imt3673_podcast_manager.models.Podcast;
 import haakoleg.imt3673_podcast_manager.models.User;
 import haakoleg.imt3673_podcast_manager.utils.CheckNetwork;
 import haakoleg.imt3673_podcast_manager.utils.Messages;
@@ -130,9 +124,9 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        fAuth.signInWithEmailAndPassword(email, password).addOnSuccessListener(result -> {
-            goToMain();
-        }).addOnFailureListener(ex -> {
+        fAuth.signInWithEmailAndPassword(email, password).addOnSuccessListener(result ->
+                goToMain()
+        ).addOnFailureListener(ex -> {
             Messages.showError(this, ex.getLocalizedMessage(), null);
             Log.e("LoginActivity", Log.getStackTraceString(ex));
         });
