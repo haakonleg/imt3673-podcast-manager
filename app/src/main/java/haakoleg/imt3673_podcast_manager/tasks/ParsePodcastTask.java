@@ -136,6 +136,6 @@ public class ParsePodcastTask extends Task<Podcast> {
 
         JSONArray res = new JSONObject(buffer.toString()).getJSONArray("results");
         JSONObject resObj = res.getJSONObject(0);
-        return resObj.getString("feedUrl");
+        return resObj.getString("feedUrl").toLowerCase();
     }
 }
