@@ -41,11 +41,15 @@ public abstract class Parser {
     protected String readAttributeValue(XmlPullParser parser, String name) throws IOException, XmlPullParserException {
         String result = parser.getAttributeValue(null, name);
         if (result != null) {
-            parser.nextTag();
+            if (parser.getEventType() != XmlPullParser.END_TAG) {
+                parser.nextTag();
+            }
             return result;
         } else {
-            parser.nextTag();
-            return "";
+            if (parser.getEventType() != XmlPullParser.END_TAG) {
+                parser.nextTag();
+            }
+            return null;
         }
     }
 

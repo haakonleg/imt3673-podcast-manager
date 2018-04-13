@@ -1,11 +1,14 @@
 package haakoleg.imt3673_podcast_manager.parsers;
 
+import android.util.Log;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import haakoleg.imt3673_podcast_manager.models.Podcast;
 import haakoleg.imt3673_podcast_manager.models.PodcastEpisode;
@@ -26,7 +29,7 @@ public class RSSParser extends Parser {
         parser.require(XmlPullParser.START_TAG, null, "channel");
 
         // Read tags until encounter end tag
-        while (parser.next() != XmlPullParser.END_TAG) {
+        while (parser.next() != XmlPullParser.END_DOCUMENT) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
             }
@@ -48,12 +51,7 @@ public class RSSParser extends Parser {
                     parser.nextTag();
                 }
             } else if (tagName.equalsIgnoreCase("itunes:category")) {
-                // Only read the first category
-                if (podcast.getCategory() == null) {
-                    podcast.setCategory(readAttributeValue(parser, "text"));
-                } else {
-                    parser.nextTag();
-                }
+                podcast.setCategory(readAttributeValue(parser, "text"));
             } else if (tagName.equalsIgnoreCase("category")) {
                 // Prefer itunes:category
                 if (podcast.getCategory() == null) {
@@ -110,14 +108,24 @@ public class RSSParser extends Parser {
                 }
                 parser.nextTag();
             } else if (tagName.equalsIgnoreCase("itunes:duration")) {
-                episode.setDuration(Integer.parseInt(readText(parser)));
+                episode.setDuration(readDuration(parser));
             } else if (tagName.equalsIgnoreCase("pubDate")) {
                 episode.setUpdated(readDate(parser, sdf));
             } else {
                 skip(parser);
             }
         }
+
         return episode;
+    }
+
+    private int readDuration(XmlPullParser parser) throws XmlPullParserException, IOException {
+        String duration = readText(parser);
+        if (duration.contains(":")) {
+            return (int) TimeUnit.MINUTES.toSeconds(Long.parseLong(duration.substring(0, duration.indexOf(":"))))
+                    + Integer.parseInt(duration.substring(duration.indexOf(":") + 1, duration.length() - 1));
+        }
+        return Integer.parseInt(duration);
     }
 
     private String readImage(XmlPullParser parser) throws XmlPullParserException, IOException {

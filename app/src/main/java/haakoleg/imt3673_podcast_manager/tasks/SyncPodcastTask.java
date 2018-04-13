@@ -1,6 +1,8 @@
 package haakoleg.imt3673_podcast_manager.tasks;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteConstraintException;
+import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -78,7 +80,7 @@ public class SyncPodcastTask extends Task<List<PodcastEpisode>> {
 
         // Find new/updated episodes
         for (PodcastEpisode episode : podcast.getEpisodes()) {
-            if (episode.getUpdated() > lastUpdated) {
+            if (episode.getAudioUrl() != null && episode.getUpdated() > lastUpdated) {
                 episode.setParentUrl(podcast.getUrl());
                 updated.add(episode);
             }

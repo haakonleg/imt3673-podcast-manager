@@ -131,7 +131,11 @@ public class ShowEpisodesFragment extends Fragment {
         if (instanceDownloaded) {
             mainActivity.getSupportActionBar().setTitle(R.string.saved_episodes);
         } else {
-            mainActivity.getSupportActionBar().setTitle(podcasts.get(0).getTitle());
+            if (podcasts.size() == 1) {
+                mainActivity.getSupportActionBar().setTitle(podcasts.get(0).getTitle());
+            } else {
+                mainActivity.getSupportActionBar().setTitle(R.string.home);
+            }
         }
         mainActivity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_24dp);
         mainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
