@@ -128,7 +128,11 @@ public class ShowEpisodesFragment extends Fragment {
         super.onResume();
 
         MainActivity mainActivity = (MainActivity) getActivity();
-        mainActivity.getSupportActionBar().setTitle(podcasts.get(0).getTitle());
+        if (instanceDownloaded) {
+            mainActivity.getSupportActionBar().setTitle(R.string.saved_episodes);
+        } else {
+            mainActivity.getSupportActionBar().setTitle(podcasts.get(0).getTitle());
+        }
         mainActivity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_24dp);
         mainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
     }

@@ -7,18 +7,17 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.SparseIntArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
-import android.widget.ImageButton;
-import android.widget.TextView;
+import android.view.View;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -36,6 +35,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import haakoleg.imt3673_podcast_manager.database.AppDatabase;
 import haakoleg.imt3673_podcast_manager.models.Podcast;
@@ -192,10 +192,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Add to array and drawer if it doesn't already exist
         if (this.podcasts.get(id) == null) {
             this.podcasts.put(id, podcast);
-            subscriptionsMenu.add(R.id.nav_subscriptions_submenu, id, Menu.NONE, podcast.getTitle());
+            subscriptionsMenu.add(R.id.nav_subscriptions_submenu, id, 0, podcast.getTitle());
 
             // Set checkable and long click listener for podcast item
-            MenuItem item = subscriptionsMenu.getItem(subscriptionsMenu.size() - 1);
+            MenuItem item = subscriptionsMenu.findItem(id);
             item.setCheckable(true);
 
             // Load podcast image into the item icon
@@ -215,6 +215,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     /**
+     * Removes a podcast from the drawer list
+     * @param podcast The podcast object to remove
+     */
+    public void removePodcastFromDrawer(Podcast podcast) {
+        subscriptionsMenu.removeItem(podcast.hashCode());
+    }
+
+    /**
      * Parses a new podcast, and if the podcast is of a valid format, it is added to the drawer menu
      */
     private void addPodcast(String url) {
@@ -228,7 +236,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         ThreadManager.get().execute(task);
     }
-
 
     /**
      * Replace a fragment in the "main_content" FrameLayout, which
@@ -246,7 +253,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Deletes all locally saved podcasts in the SQLite database and signs the user out from firebase
      */
     private void signOut() {
-        DeletePodcastsTask task = new DeletePodcastsTask(this, res -> {
+        List<Podcast> allPodcasts = new ArrayList<>(podcasts.values());
+
+        // Delete all locally stored podcasts when the user signs out
+        DeletePodcastsTask task = new DeletePodcastsTask(this, allPodcasts, false, res -> {
             FirebaseAuth.getInstance().signOut();
             finish();
         }, error -> {
@@ -280,6 +290,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_saved_episodes:
                 getSupportFragmentManager().popBackStack();
                 displayContent(ShowEpisodesFragment.newInstanceDownloaded(new ArrayList<>(podcasts.values())), "DownloadedEpisodes");
+                break;
+            case R.id.nav_manage:
+                getSupportFragmentManager().popBackStack();
+                displayContent(ManagePodcastsFragment.newInstance(new ArrayList<>(podcasts.values())), "ManagePodcasts");
                 break;
             case R.id.nav_logout:
                 signOut();

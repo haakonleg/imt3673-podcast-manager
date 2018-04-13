@@ -18,11 +18,11 @@ public interface PodcastEpisodeDAO {
     @Query("SELECT * FROM PodcastEpisode WHERE parentUrl IN (:parentUrls) ORDER BY updated DESC LIMIT 0,:max")
     List<PodcastEpisode> getEpisodes(List<String> parentUrls, int max);
 
+    @Query("DELETE FROM PodcastEpisode WHERE parentUrl = :parentUrl")
+    void deleteEpisodes(String parentUrl);
+
     @Query("SELECT updated FROM PodcastEpisode WHERE parentUrl = :parentUrl ORDER BY updated DESC LIMIT 1")
     long getLastUpdated(String parentUrl);
-
-    @Query("DELETE FROM PodcastEpisode")
-    void deleteAll();
 
     @Insert
     void insertEpisode(PodcastEpisode episode);
@@ -34,5 +34,5 @@ public interface PodcastEpisodeDAO {
     void updateEpisode(PodcastEpisode episode);
 
     @Delete
-    void deleteEpisode(PodcastEpisode episode);
+    void deleteEpisodes(List<PodcastEpisode> episodes);
 }

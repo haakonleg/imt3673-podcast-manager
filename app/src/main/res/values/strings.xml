@@ -30,4 +30,9 @@
     <string name="popular">Popular</string>
     <string name="top_rated">Top Rated</string>
     <string name="explore_podcasts_actionbar_title">Explore Podcasts</string>
+    <string name="manage_podcasts">Manage Podcasts</string>
+    <string name="dialog_no">No</string>
+    <string name="dialog_yes">Yes</string>
+    <string name="are_you_sure_remove">Are you sure you want to unsubscribe from this podcast?</string>
+    <string name="podcast_deleted">Podcast deleted</string>
 </resources>

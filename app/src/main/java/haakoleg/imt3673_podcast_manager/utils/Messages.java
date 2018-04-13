@@ -13,4 +13,13 @@ public class Messages {
         builder.setOnDismissListener(cb);
         builder.create().show();
     }
+
+    public static void showConfirmationDialog(Context context, String title, String message, AlertDialog.OnClickListener cb) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(title);
+        builder.setMessage(message);
+        builder.setNegativeButton(R.string.dialog_no, null);
+        builder.setPositiveButton(R.string.dialog_yes, cb);
+        builder.create().show();
+    }
 }

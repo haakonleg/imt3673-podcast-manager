@@ -4,6 +4,7 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Update;
 
 import java.util.List;
 
@@ -23,6 +24,9 @@ public interface PodcastDAO {
     @Query("DELETE FROM Podcast")
     void deleteAll();
 
+    @Update
+    void updatePodcasts(List<Podcast> podcasts);
+
     @Insert
     void insertPodcast(Podcast podcast);
 
@@ -31,4 +35,7 @@ public interface PodcastDAO {
 
     @Delete
     void deletePodcast(Podcast podcast);
+
+    @Delete
+    void deletePodcasts(List<Podcast> podcasts);
 }
