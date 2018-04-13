@@ -39,42 +39,56 @@ public class RSSParser extends Parser {
                 continue;
             }
 
-            String tagName = parser.getName();
-            if (tagName.equalsIgnoreCase("title")) {
-                podcast.setTitle(readText(parser));
-            } else if (tagName.equalsIgnoreCase("link")) {
-                podcast.setLink(readText(parser));
-            } else if (tagName.equalsIgnoreCase("description")) {
-                podcast.setDescription(readText(parser));
-            } else if (tagName.equalsIgnoreCase("itunes:summary")) {
-                // itunes:summary contains shorter description than description, so only
-                // set if description is not already set
-                if (podcast.getDescription() == null) {
+            String tagName = parser.getName().toLowerCase();
+            switch (tagName) {
+                case "title":
+                    podcast.setTitle(readText(parser));
+                    break;
+                case "link":
+                    podcast.setLink(readText(parser));
+                    break;
+                case "description":
                     podcast.setDescription(readText(parser));
-                } else {
-                    parser.next();
-                    parser.nextTag();
-                }
-            } else if (tagName.equalsIgnoreCase("itunes:category")) {
-                podcast.setCategory(readAttributeValue(parser, "text"));
-            } else if (tagName.equalsIgnoreCase("category")) {
-                // Prefer itunes:category
-                if (podcast.getCategory() == null) {
-                    podcast.setCategory(readText(parser));
-                } else {
-                    parser.next();
-                    parser.nextTag();
-                }
-            } else if (tagName.equalsIgnoreCase("image")) {
-                podcast.setImage(readImage(parser));
-            } else if (tagName.equalsIgnoreCase("itunes:image")) {
-                podcast.setImage(readAttributeValue(parser, "href"));
-            } else if (tagName.equalsIgnoreCase("pubDate")) {
-                podcast.setUpdated(readDate(parser, sdf));
-            } else if (tagName.equalsIgnoreCase("item")) {
-                podcast.addEpisode(readEpisode(parser));
-            } else {
-                skip(parser);
+                    break;
+                case "itunes:summary":
+                    // itunes:summary contains shorter description than description, so only
+                    // set if description is not already set
+                    if (podcast.getDescription() == null) {
+                        podcast.setDescription(readText(parser));
+                    } else {
+                        parser.next();
+                        parser.nextTag();
+                    }
+                    break;
+                case "itunes:category":
+                    podcast.setCategory(readAttributeValue(parser, "text"));
+                    break;
+                case "category":
+                    // Prefer itunes:category
+                    if (podcast.getCategory() == null) {
+                        podcast.setCategory(readText(parser));
+                    } else {
+                        parser.next();
+                        parser.nextTag();
+                    }
+                    break;
+                case "image":
+                    podcast.setImage(readImage(parser));
+                    break;
+                case "itunes:image":
+                    podcast.setImage(readAttributeValue(parser, "href"));
+                    break;
+                case "pubdate":
+                    podcast.setUpdated(readDate(parser, sdf));
+                    break;
+                case "item":
+                    podcast.addEpisode(readEpisode(parser));
+                    break;
+                case "itunes:new-feed-url":
+                    podcast.setUrl(readText(parser));
+                    break;
+                default:
+                    skip(parser);
             }
         }
 
@@ -88,45 +102,55 @@ public class RSSParser extends Parser {
                 continue;
             }
 
-            String tagName = parser.getName();
-            if (tagName.equalsIgnoreCase("title")) {
-                episode.setTitle(readText(parser));
-            } else if (tagName.equalsIgnoreCase("link")) {
-                episode.setLink(readText(parser));
-            } else if (tagName.equalsIgnoreCase("description")) {
-                episode.setDescription(readText(parser));
-            } else if (tagName.equalsIgnoreCase("itunes:summary")) {
-                // itunes:summary contains shorter description than description, so only
-                // set if description is not already set
-                if (episode.getDescription() == null) {
+            String tagName = parser.getName().toLowerCase();
+            switch (tagName) {
+                case "title":
+                    episode.setTitle(readText(parser));
+                    break;
+                case "link":
+                    episode.setLink(readText(parser));
+                    break;
+                case "description":
                     episode.setDescription(readText(parser));
-                } else {
-                    parser.next();
+                    break;
+                case "itunes:summary":
+                    // itunes:summary contains shorter description than description, so only
+                    // set if description is not already set
+                    if (episode.getDescription() == null) {
+                        episode.setDescription(readText(parser));
+                    } else {
+                        parser.next();
+                        parser.nextTag();
+                    }
+                    break;
+                case "enclosure":
+                    // The "enclosure" tag contains media items, in this case we want to set
+                    // the audio URL if the type is audio
+                    String type = parser.getAttributeValue(null, "type").toLowerCase();
+                    if (type.startsWith("audio")) {
+                        episode.setAudioUrl(parser.getAttributeValue(null, "url"));
+                    }
                     parser.nextTag();
-                }
-            } else if (tagName.equalsIgnoreCase("enclosure")) {
-                // The "enclosure" tag contains media items, in this case we want to set
-                // the audio URL if the type is audio
-                String type = parser.getAttributeValue(null, "type").toLowerCase();
-                if (type.startsWith("audio")) {
-                    episode.setAudioUrl(parser.getAttributeValue(null, "url"));
-                }
-                parser.nextTag();
-            } else if (tagName.equalsIgnoreCase("itunes:duration")) {
-                episode.setDuration(readDuration(parser));
-            } else if (tagName.equalsIgnoreCase("pubDate")) {
-                episode.setUpdated(readDate(parser, sdf));
-            } else {
-                skip(parser);
+                    break;
+                case "itunes:duration":
+                    episode.setDuration(readDuration(parser));
+                    break;
+                case "pubdate":
+                    episode.setUpdated(readDate(parser, sdf));
+                    break;
+                default:
+                    skip(parser);
             }
         }
-
         return episode;
     }
 
+    /**
+     * Parses the itunes:duration tag which has the format HH:mm:ss or mm:ss or ss
+     * @return Total duration in seconds
+     */
     private int readDuration(XmlPullParser parser) throws XmlPullParserException, IOException {
         String duration = readText(parser);
-        Log.e("DURATION", duration);
 
         int seconds = 0;
         String[] vals = duration.split(":");
