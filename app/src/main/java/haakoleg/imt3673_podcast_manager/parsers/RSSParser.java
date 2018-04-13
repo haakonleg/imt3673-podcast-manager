@@ -6,7 +6,12 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -121,11 +126,15 @@ public class RSSParser extends Parser {
 
     private int readDuration(XmlPullParser parser) throws XmlPullParserException, IOException {
         String duration = readText(parser);
-        if (duration.contains(":")) {
-            return (int) TimeUnit.MINUTES.toSeconds(Long.parseLong(duration.substring(0, duration.indexOf(":"))))
-                    + Integer.parseInt(duration.substring(duration.indexOf(":") + 1, duration.length() - 1));
+        Log.e("DURATION", duration);
+
+        int seconds = 0;
+        String[] vals = duration.split(":");
+        for (int i = 0; i < vals.length; i++) {
+            int value = Integer.parseInt(vals[i]);
+            seconds += (value * Math.pow(60, (vals.length-1) - i));
         }
-        return Integer.parseInt(duration);
+        return seconds;
     }
 
     private String readImage(XmlPullParser parser) throws XmlPullParserException, IOException {

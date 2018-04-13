@@ -146,7 +146,6 @@ public class Podcast implements Parcelable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.url, this.title, this.link,
-                this.description, this.category, this.image, this.updated);
+        return Objects.hash(this.url);
     }
 }
