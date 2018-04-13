@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.transition.Slide;
 import android.transition.TransitionManager;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +23,8 @@ import haakoleg.imt3673_podcast_manager.utils.CheckNetwork;
 import haakoleg.imt3673_podcast_manager.utils.Messages;
 
 public class LoginActivity extends AppCompatActivity {
+    private static boolean runOnce;
+
     private FirebaseAuth fAuth;
     private DatabaseReference dbRef;
 
@@ -35,6 +36,13 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Set persistence for Firebase, this can only be run once or the app
+        // will crash if it is restarted
+        if (!runOnce) {
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+            runOnce = true;
+        }
 
         dbRef = FirebaseDatabase.getInstance().getReference();
         fAuth = FirebaseAuth.getInstance();

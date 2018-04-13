@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.TransitionManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -25,10 +26,11 @@ import java.util.ArrayList;
 import haakoleg.imt3673_podcast_manager.models.Podcast;
 
 public class ExplorePodcastsFragment extends Fragment implements
-        ValueEventListener, PodcastsRecyclerAdapter.OnPodcastClickListener {
+        ValueEventListener, PodcastsRecyclerAdapter.OnPodcastClickListener, TabLayout.OnTabSelectedListener {
 
     private DatabaseReference dbRef;
     private RecyclerView podcastsRecycler;
+    private PodcastsRecyclerAdapter adapter;
     private TabLayout tabLayout;
 
     @Override
@@ -53,6 +55,7 @@ public class ExplorePodcastsFragment extends Fragment implements
     public void onStart() {
         super.onStart();
         dbRef.addListenerForSingleValueEvent(this);
+        tabLayout.addOnTabSelectedListener(this);
     }
 
     @Override
@@ -103,8 +106,7 @@ public class ExplorePodcastsFragment extends Fragment implements
         }
 
         // Create adapter
-        PodcastsRecyclerAdapter adapter =
-                new PodcastsRecyclerAdapter(
+        adapter = new PodcastsRecyclerAdapter(
                         ExplorePodcastsFragment.this,
                         podcasts, subscriberCounts, ratings, this);
         podcastsRecycler.setAdapter(adapter);
@@ -117,5 +119,33 @@ public class ExplorePodcastsFragment extends Fragment implements
     public void onPodcastClicked(Podcast podcast, int subscribers) {
         DisplayPodcastFragment fragment = DisplayPodcastFragment.newInstance(podcast);
         ((MainActivity)getActivity()).displayContent(fragment, "DisplayPodcast");
+    }
+
+    /**
+     * When the user selects "popular" or "top rated" tab, call adapter method
+     * to sort by popularity or rating
+     * @param tab
+     */
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+        int pos = tab.getPosition();
+
+        podcastsRecycler.scrollToPosition(0);
+        TransitionManager.beginDelayedTransition(podcastsRecycler);
+        if (pos == 0) {
+            adapter.sortByPopularity();
+        } else {
+            adapter.sortByRating();
+        }
+    }
+
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) {
+
+    }
+
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
+
     }
 }

@@ -219,7 +219,7 @@ public class EpisodePlaybackService extends MediaBrowserServiceCompat {
             // Initialize MediaPlayer
             mediaPlayer.reset();
             try {
-                mediaPlayer.setDataSource(EpisodePlaybackService.this, description.getMediaUri());
+                mediaPlayer.setDataSource(description.getMediaUri().toString());
             } catch (IOException e) {
                 Log.e("EpisodePlaybackService", Log.getStackTraceString(e));
             }

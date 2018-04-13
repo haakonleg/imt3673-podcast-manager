@@ -7,21 +7,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.transition.Slide;
-import android.transition.TransitionManager;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -47,6 +41,7 @@ import haakoleg.imt3673_podcast_manager.tasks.GetPodcastsTask;
 import haakoleg.imt3673_podcast_manager.tasks.ParsePodcastTask;
 import haakoleg.imt3673_podcast_manager.tasks.SyncPodcastTask;
 import haakoleg.imt3673_podcast_manager.utils.CheckNetwork;
+import haakoleg.imt3673_podcast_manager.utils.Messages;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static final File DOWNLOAD_DIR = new File(
@@ -170,7 +165,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void syncPodcast(Podcast podcast) {
         SyncPodcastTask task = new SyncPodcastTask(this, podcast, updatedEpisodes -> {
             Log.d("Synced", podcast.getUrl());
-            refreshFragments();
         }, error -> {
             // TODO: handle error
         });
@@ -181,21 +175,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Show home fragment containing recent episodes from all podcasts
         ShowEpisodesFragment fragment = ShowEpisodesFragment.newInstance(new ArrayList<>(this.podcasts.values()), 50);
         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment, "HomeFragment").commit();
-    }
-
-    /**
-     * Refreshes fragments displaying podcast episodes and the home fragment
-     * Is used when the user adds new podcasts so they are displayed immediately
-     */
-    private void refreshFragments() {
-        Fragment home = getSupportFragmentManager().findFragmentByTag("HomeFragment");
-        Fragment podcast = getSupportFragmentManager().findFragmentByTag("ShowEpisodes");
-
-        getSupportFragmentManager().beginTransaction().remove(home).commit();
-        showHomeFragment();
-        if (podcast != null) {
-            getSupportFragmentManager().beginTransaction().detach(podcast).attach(podcast).commit();
-        }
     }
 
     /**
@@ -244,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     /**
      * Parses a new podcast, and if the podcast is of a valid format, it is added to the drawer menu
      */
-    private void addPodcast(String url) {
+    public void addPodcast(String url) {
         ParsePodcastTask task = new ParsePodcastTask(this, url, podcast ->  {
             // Add podcast to drawer and sync
             addPodcastToDrawer(podcast);
@@ -295,6 +274,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (id) {
             case R.id.nav_home:
                 getSupportFragmentManager().popBackStack();
+                showHomeFragment();
                 break;
             case R.id.nav_userfeeds:
                 getSupportFragmentManager().popBackStack();

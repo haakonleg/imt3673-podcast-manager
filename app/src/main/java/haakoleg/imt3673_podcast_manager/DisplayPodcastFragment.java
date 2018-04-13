@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.database.ChildEventListener;
@@ -88,6 +89,11 @@ public class DisplayPodcastFragment extends Fragment implements ChildEventListen
         commentFab.setOnClickListener(v -> {
             PostCommentDialogFragment dialog = PostCommentDialogFragment.newInstance(Integer.toHexString(podcast.hashCode()));
             dialog.show(getActivity().getSupportFragmentManager(), "PostCommentDialog");
+        });
+
+        addFab.setOnClickListener(v -> {
+            ((MainActivity)getActivity()).addPodcast(podcast.getUrl());
+            Toast.makeText(getActivity(), "Subscribed to " + podcast.getTitle(), Toast.LENGTH_SHORT).show();
         });
 
         // Create adapter for comments recyclerview

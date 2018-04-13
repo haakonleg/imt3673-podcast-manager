@@ -54,7 +54,7 @@ public class SyncPodcastTask extends Task<List<PodcastEpisode>> {
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference().child("podcasts").child(key);
 
         // Check if the podcast exists in Firebase, if not add it
-        // Also add the user to the podcast list of subscribed users
+        // Also update the count of subscribed users
         dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
