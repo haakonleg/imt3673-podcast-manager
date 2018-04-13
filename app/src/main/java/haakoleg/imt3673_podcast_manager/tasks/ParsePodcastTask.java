@@ -17,8 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.net.ssl.HttpsURLConnection;
-
 import haakoleg.imt3673_podcast_manager.models.Podcast;
 import haakoleg.imt3673_podcast_manager.parsers.PodcastParser;
 import haakoleg.imt3673_podcast_manager.utils.CheckNetwork;

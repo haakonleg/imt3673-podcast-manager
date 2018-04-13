@@ -344,6 +344,7 @@ public class EpisodePlayerFragment extends Fragment {
                     break;
                 case PlaybackStateCompat.STATE_STOPPED:
                     // Audio is stopped, disconnect the activity from the playback service
+                    MediaControllerCompat.getMediaController(getActivity()).getTransportControls().sendCustomAction("StopUpdater", null);
                     playBtn.setImageDrawable(getActivity().getDrawable(R.drawable.ic_play_arrow_24dp));
                     mediaBrowser.disconnect();
                     break;
