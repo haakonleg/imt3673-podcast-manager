@@ -3,9 +3,15 @@ package haakoleg.imt3673_podcast_manager;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.transition.Slide;
+import android.transition.TransitionManager;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -21,6 +27,8 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth fAuth;
     private DatabaseReference dbRef;
 
+    private View loginView;
+    private View registerView;
     private EditText emailInput;
     private EditText passwordInput;
 
@@ -38,19 +46,23 @@ public class LoginActivity extends AppCompatActivity {
 
             // Not signed in, set view and find elements
             setContentView(R.layout.activity_login);
+            loginView = findViewById(R.id.sign_in_view);
+            registerView = findViewById(R.id.register_view);
             emailInput = findViewById(R.id.email_input);
             passwordInput = findViewById(R.id.password_input);
-            Button registerBtn = findViewById(R.id.create_user_btn);
+
+            TextView showregisterBtn = findViewById(R.id.show_register_btn);
+            TextView showLoginBtn = findViewById(R.id.show_login_btn);
             Button signInBtn = findViewById(R.id.sign_in_btn);
 
-            // Set click listener for register button
-            registerBtn.setOnClickListener(v -> {
-                String email = emailInput.getText().toString();
-                String password = passwordInput.getText().toString();
-                if (checkEmailPwd(email, password)) {
-                    registerUser(email, password);
-                }
-            });
+            EditText registerUsernameInput = findViewById(R.id.register_username_input);
+            EditText registerEmailInput = findViewById(R.id.register_email_input);
+            EditText registerPasswordInput = findViewById(R.id.register_password_input);
+            Button registerUserBtn = findViewById(R.id.register_user_btn);
+
+            // Onclick listener for show register and login views
+            showregisterBtn.setOnClickListener(v -> showRegisterUserView());
+            showLoginBtn.setOnClickListener(v -> showLoginUserView());
 
             // Set click listener for sign in button
             signInBtn.setOnClickListener(v -> {
@@ -60,7 +72,33 @@ public class LoginActivity extends AppCompatActivity {
                     signInUser(email, password);
                 }
             });
+
+            // Set click listener for register button
+            registerUserBtn.setOnClickListener(v -> {
+                String username = registerUsernameInput.getText().toString();
+                String email = registerEmailInput.getText().toString();
+                String password = registerPasswordInput.getText().toString();
+                if (username.length() < 3) {
+                    Messages.showError(this, getString(R.string.error_username_len), null);
+                } else if (checkEmailPwd(email, password)) {
+                    registerUser(username, email, password);
+                }
+            });
         }
+    }
+
+    // Switches view to register user
+    private void showRegisterUserView() {
+        TransitionManager.beginDelayedTransition((ViewGroup) loginView.getParent(), new Slide(Gravity.END));
+        loginView.setVisibility(View.GONE);
+        registerView.setVisibility(View.VISIBLE);
+    }
+
+    // Switches view to login user
+    private void showLoginUserView() {
+        TransitionManager.beginDelayedTransition((ViewGroup) loginView.getParent(), new Slide(Gravity.START));
+        registerView.setVisibility(View.GONE);
+        loginView.setVisibility(View.VISIBLE);
     }
 
     private boolean checkEmailPwd(String email, String password) {
@@ -86,7 +124,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param email The e-mail for the new user
      * @param password The password for the new user
      */
-    private void registerUser(String email, String password) {
+    private void registerUser(String username, String email, String password) {
         // Check that internet connectivity exists
         if (!CheckNetwork.hasNetwork(this)) {
             Messages.showError(this, getString(R.string.error_no_internet), null);
@@ -97,18 +135,16 @@ public class LoginActivity extends AppCompatActivity {
             FirebaseUser user = fAuth.getCurrentUser();
 
             // Set user display name
-            // TODO: Don't use email
             UserProfileChangeRequest changeRequest = new UserProfileChangeRequest.Builder()
-                    .setDisplayName(email)
+                    .setDisplayName(username)
                     .build();
             user.updateProfile(changeRequest);
 
             // Save user to database
-            dbRef.child("users").child(user.getUid()).setValue(new User(user.getEmail(), user.getEmail()));
+            dbRef.child("users").child(user.getUid()).setValue(new User(username, user.getEmail()));
             goToMain();
         }).addOnFailureListener(ex -> {
             Messages.showError(this, ex.getLocalizedMessage(), null);
-            Log.e("LoginActivity", Log.getStackTraceString(ex));
         });
     }
 
@@ -128,7 +164,6 @@ public class LoginActivity extends AppCompatActivity {
                 goToMain()
         ).addOnFailureListener(ex -> {
             Messages.showError(this, ex.getLocalizedMessage(), null);
-            Log.e("LoginActivity", Log.getStackTraceString(ex));
         });
     }
 }

@@ -7,17 +7,21 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.transition.Slide;
+import android.transition.TransitionManager;
 import android.util.Log;
-import android.util.SparseIntArray;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -35,7 +39,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import haakoleg.imt3673_podcast_manager.database.AppDatabase;
 import haakoleg.imt3673_podcast_manager.models.Podcast;
@@ -167,6 +170,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void syncPodcast(Podcast podcast) {
         SyncPodcastTask task = new SyncPodcastTask(this, podcast, updatedEpisodes -> {
             Log.d("Synced", podcast.getUrl());
+            refreshFragments();
         }, error -> {
             // TODO: handle error
         });
@@ -176,7 +180,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void showHomeFragment() {
         // Show home fragment containing recent episodes from all podcasts
         ShowEpisodesFragment fragment = ShowEpisodesFragment.newInstance(new ArrayList<>(this.podcasts.values()), 50);
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment, "HomeFragment").commit();
+    }
+
+    /**
+     * Refreshes fragments displaying podcast episodes and the home fragment
+     * Is used when the user adds new podcasts so they are displayed immediately
+     */
+    private void refreshFragments() {
+        Fragment home = getSupportFragmentManager().findFragmentByTag("HomeFragment");
+        Fragment podcast = getSupportFragmentManager().findFragmentByTag("ShowEpisodes");
+
+        getSupportFragmentManager().beginTransaction().remove(home).commit();
+        showHomeFragment();
+        if (podcast != null) {
+            getSupportFragmentManager().beginTransaction().detach(podcast).attach(podcast).commit();
+        }
     }
 
     /**

@@ -98,34 +98,10 @@ public class ShowEpisodesFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-
-        Task task;
-        if (instanceDownloaded) {
-            task = new GetDownloadedEpisodesTask(getActivity(), episodes -> {
-                EpisodesRecyclerAdapter adapter =
-                        new EpisodesRecyclerAdapter(this, new EpisodeClickListener(), podcasts, episodes);
-                episodesRecycler.setAdapter(adapter);
-            }, error -> {
-                // TODO: Handle error
-            });
-        } else {
-            // Retrieve episodes from SQLite and create new adapter for the RecyclerView
-            task = new GetEpisodesTask(getActivity(), podcasts, episodes -> {
-                EpisodesRecyclerAdapter adapter =
-                        new EpisodesRecyclerAdapter(this, new EpisodeClickListener(), podcasts, episodes);
-                episodesRecycler.setAdapter(adapter);
-            }, error -> {
-                // TODO: Handle error
-            });
-        }
-        ThreadManager.get().execute(task);
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
+
+        fetchEpisodes();
 
         MainActivity mainActivity = (MainActivity) getActivity();
         if (instanceDownloaded) {
@@ -150,6 +126,52 @@ public class ShowEpisodesFragment extends Fragment {
         return false;
     }
 
+    /**
+     * Fetches podcast episodes from the database and adds them to the recyclerview
+     */
+    private void fetchEpisodes() {
+        Task task;
+        if (instanceDownloaded) {
+            task = new GetDownloadedEpisodesTask(getActivity(), episodes -> {
+                EpisodesRecyclerAdapter adapter =
+                        new EpisodesRecyclerAdapter(this, new EpisodeClickListener(), podcasts, episodes);
+                episodesRecycler.setAdapter(adapter);
+            }, error -> {
+                // TODO: Handle error
+            });
+        } else {
+            // Retrieve episodes from SQLite and create new adapter for the RecyclerView
+            task = new GetEpisodesTask(getActivity(), podcasts, episodes -> {
+                EpisodesRecyclerAdapter adapter =
+                        new EpisodesRecyclerAdapter(this, new EpisodeClickListener(), podcasts, episodes);
+                episodesRecycler.setAdapter(adapter);
+            }, error -> {
+                // TODO: Handle error
+            });
+        }
+        ThreadManager.get().execute(task);
+    }
+
+    private void downloadEpisode(PodcastEpisode episode) {
+        // Ask for permission to write to external storage
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        } else {
+            // Use the DownloadManager service for downloading the audio file
+            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(episode.getAudioUrl()));
+            request.setTitle(episode.getTitle());
+            request.setDescription("Downloading Episode");
+            // Destination file is set to the external download directory and filename is the hashcode of the podcast episode
+            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "/podcastmanager/" + Integer.toHexString(episode.hashCode()));
+            request.setMimeType("audio/*");
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+
+            DownloadManager dm = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
+            // Enque the download request
+            dm.enqueue(request);
+        }
+    }
+
     private class EpisodeClickListener implements EpisodesRecyclerAdapter.OnEpisodeClickListener {
         @Override
         public void onEpisodeClicked(PodcastEpisode episode, Podcast podcast) {
@@ -159,23 +181,7 @@ public class ShowEpisodesFragment extends Fragment {
 
         @Override
         public void onDownloadEpisodeClicked(PodcastEpisode episode) {
-            // Ask for permission to write to external storage
-            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-            } else {
-                // Use the DownloadManager service for downloading the audio file
-                DownloadManager.Request request = new DownloadManager.Request(Uri.parse(episode.getAudioUrl()));
-                request.setTitle(episode.getTitle());
-                request.setDescription("Downloading Episode");
-                // Destination file is set to the external download directory and filename is the hashcode of the podcast episode
-                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "/podcastmanager/" + Integer.toHexString(episode.hashCode()));
-                request.setMimeType("audio/*");
-                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-
-                DownloadManager dm = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
-                // Enque the download request
-                dm.enqueue(request);
-            }
+            downloadEpisode(episode);
         }
     }
 }
