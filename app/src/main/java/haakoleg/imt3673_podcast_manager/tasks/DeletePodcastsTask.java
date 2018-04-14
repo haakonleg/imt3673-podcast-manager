@@ -1,6 +1,8 @@
 package haakoleg.imt3673_podcast_manager.tasks;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteException;
+import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -28,12 +30,17 @@ public class DeletePodcastsTask extends Task<Void> {
     protected int doTask() {
         AppDatabase db = AppDatabase.getDb(context);
 
-        // Delete podcast episodes
-        for (Podcast podcast : podcasts) {
-            db.podcastEpisodeDAO().deleteEpisodes(podcast.getUrl());
+        try {
+            // Delete podcast episodes
+            for (Podcast podcast : podcasts) {
+                db.podcastEpisodeDAO().deleteEpisodes(podcast.getUrl());
+            }
+            // Delete podcasts
+            db.podcastDAO().deletePodcasts(podcasts);
+        } catch (SQLiteException e) {
+            Log.e(getClass().getName(), Log.getStackTraceString(e));
+            return ERROR_SQLITE;
         }
-        // Delete podcasts
-        db.podcastDAO().deletePodcasts(podcasts);
 
         // Delete podcast from user subscription list on firebase
         if (deleteFromFirebase) {

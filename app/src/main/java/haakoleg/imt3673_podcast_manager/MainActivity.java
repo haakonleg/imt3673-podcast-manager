@@ -40,8 +40,8 @@ import haakoleg.imt3673_podcast_manager.tasks.DeletePodcastsTask;
 import haakoleg.imt3673_podcast_manager.tasks.GetPodcastsTask;
 import haakoleg.imt3673_podcast_manager.tasks.ParsePodcastTask;
 import haakoleg.imt3673_podcast_manager.tasks.SyncPodcastTask;
+import haakoleg.imt3673_podcast_manager.tasks.Task;
 import haakoleg.imt3673_podcast_manager.utils.CheckNetwork;
-import haakoleg.imt3673_podcast_manager.utils.Messages;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static final File DOWNLOAD_DIR = new File(
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 syncWithFirebase(localUrls);
             }
         }, error -> {
-            // TODO: Handle error
+            Task.errorHandler(this, error);
         });
         ThreadManager.get().execute(task);
     }
@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void parsePodcasts(List<String> podcastUrls, ParseCallback cb) {
         for (String url : podcastUrls) {
             ParsePodcastTask task = new ParsePodcastTask(this, url, cb::onPodcastParsed, error -> {
-                // TODO: Handle error
+                Task.errorHandler(this, error);
             });
             ThreadManager.get().execute(task);
         }
@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         SyncPodcastTask task = new SyncPodcastTask(this, podcast, updatedEpisodes -> {
             Log.d("Synced", podcast.getUrl());
         }, error -> {
-            // TODO: handle error
+            Task.errorHandler(this, error);
         });
         ThreadManager.get().execute(task);
     }
@@ -229,8 +229,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             addPodcastToDrawer(podcast);
             syncPodcast(podcast);
         }, error -> {
-            // TODO: Show better error
-            Log.e("ERROR", Integer.toString(error));
+            Task.errorHandler(this, error);
         });
         ThreadManager.get().execute(task);
     }
@@ -258,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             FirebaseAuth.getInstance().signOut();
             finish();
         }, error -> {
-            // TODO: Handle error
+            Task.errorHandler(this, error);
         });
         ThreadManager.get().execute(task);
     }

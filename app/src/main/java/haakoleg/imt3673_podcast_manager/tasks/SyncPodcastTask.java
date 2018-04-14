@@ -2,7 +2,9 @@ package haakoleg.imt3673_podcast_manager.tasks;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteException;
 import android.support.v7.preference.PreferenceManager;
+import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -40,15 +42,25 @@ public class SyncPodcastTask extends Task<List<PodcastEpisode>> {
         AppDatabase db = AppDatabase.getDb(context);
 
         // Podcast is not in database, so add it
-        if (db.podcastDAO().getPodcast(podcast.getUrl()) == null) {
-            db.podcastDAO().insertPodcast(podcast);
+        try {
+            if (db.podcastDAO().getPodcast(podcast.getUrl()) == null) {
+                db.podcastDAO().insertPodcast(podcast);
+            }
+        } catch (SQLiteException e) {
+            Log.e(getClass().getName(), Log.getStackTraceString(e));
+            return ERROR_SQLITE;
         }
 
         // Sync podcast with firebase
         syncPodcastWithFirebase(podcast);
 
         // Sync updated episodes
-        resultObject = syncUpdatedEpisodes(db, podcast);
+        try {
+            resultObject = syncUpdatedEpisodes(db, podcast);
+        } catch (SQLiteException e) {
+            Log.e(getClass().getName(), Log.getStackTraceString(e));
+            return ERROR_SQLITE;
+        }
         return SUCCESSFUL;
     }
 
@@ -77,7 +89,7 @@ public class SyncPodcastTask extends Task<List<PodcastEpisode>> {
         });
     }
 
-    private List<PodcastEpisode> syncUpdatedEpisodes(AppDatabase db, Podcast podcast) {
+    private List<PodcastEpisode> syncUpdatedEpisodes(AppDatabase db, Podcast podcast) throws SQLiteException {
         ArrayList<PodcastEpisode> updated = new ArrayList<>();
 
         // Get the last updated episode

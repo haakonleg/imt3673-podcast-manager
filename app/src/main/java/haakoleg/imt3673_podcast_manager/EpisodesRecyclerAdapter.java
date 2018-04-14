@@ -26,24 +26,32 @@ import haakoleg.imt3673_podcast_manager.models.PodcastEpisode;
 public class EpisodesRecyclerAdapter extends RecyclerView.Adapter<EpisodesRecyclerAdapter.ViewHolder> {
     private final Fragment fragment;
     private final OnEpisodeClickListener listener;
-    private final HashMap<String, Podcast> podcasts;
-    private final List<PodcastEpisode> episodes;
+    private HashMap<String, Podcast> podcasts;
+    private List<PodcastEpisode> episodes;
 
     /**
      * Adapter constructor
      * @param fragment Reference to the fragment that this adapter is being used in, needed by Glide
-     * @param podcasts List of podcasts that the episodes belong to
-     * @param episodes List of episodes to display in the RecyclerView
      */
-    public EpisodesRecyclerAdapter(Fragment fragment, OnEpisodeClickListener listener, List<Podcast> podcasts, List<PodcastEpisode> episodes) {
+    public EpisodesRecyclerAdapter(Fragment fragment, OnEpisodeClickListener listener) {
         this.fragment = fragment;
         this.listener = listener;
+    }
+
+    /**
+     * Sets the data for the constructor, can't set this in constructor, because otherwise
+     * recyclerview logs an error "No adapter attached, skipping layout"
+     * @param podcasts The podcasts the episodes belong to
+     * @param episodes The podcast episodes to display in the recyclerview
+     */
+    public void setData(List<Podcast> podcasts, List<PodcastEpisode> episodes) {
         this.podcasts = new HashMap<>();
         // Add podcasts to hashmap
         for (Podcast podcast : podcasts) {
             this.podcasts.put(podcast.getUrl(), podcast);
         }
         this.episodes = episodes;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -86,6 +94,9 @@ public class EpisodesRecyclerAdapter extends RecyclerView.Adapter<EpisodesRecycl
 
     @Override
     public int getItemCount() {
+        if (this.episodes == null) {
+            return 0;
+        }
         return episodes.size();
     }
 

@@ -1,7 +1,11 @@
 package haakoleg.imt3673_podcast_manager.tasks;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+
+import haakoleg.imt3673_podcast_manager.R;
+import haakoleg.imt3673_podcast_manager.utils.Messages;
 
 /**
  * Abstract class which is supposed to be implemented by other tasks. Tasks extending this class
@@ -14,6 +18,7 @@ public abstract class Task<T> implements Runnable {
     public static final int ERROR_NO_INTERNET = 1;
     public static final int ERROR_DOWNLOAD = 2;
     public static final int ERROR_PARSE = 3;
+    public static final int ERROR_SQLITE = 4;
 
     private final Handler mainHandler;
     private final OnSuccessListener<T> successListener;
@@ -26,6 +31,23 @@ public abstract class Task<T> implements Runnable {
         mainHandler = new Handler(Looper.getMainLooper());
         this.successListener = successListener;
         this.errorListener = errorListener;
+    }
+
+    public static void errorHandler(Context context, int errorCode) {
+        switch (errorCode) {
+            case ERROR_NO_INTERNET:
+                Messages.showError(context, context.getString(R.string.error_no_internet), null);
+                break;
+            case ERROR_DOWNLOAD:
+                Messages.showError(context, context.getString(R.string.error_download), null);
+                break;
+            case ERROR_PARSE:
+                Messages.showError(context, context.getString(R.string.error_parse), null);
+                break;
+            case ERROR_SQLITE:
+                Messages.showError(context, context.getString(R.string.error_sqlite), null);
+                break;
+        }
     }
 
     /**

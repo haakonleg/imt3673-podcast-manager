@@ -23,18 +23,28 @@ import haakoleg.imt3673_podcast_manager.models.Podcast;
 
 public class PodcastsRecyclerAdapter extends RecyclerView.Adapter<PodcastsRecyclerAdapter.ViewHolder> {
     private final Fragment fragment;
-    private final List<PodcastObject> podcasts;
+    private List<PodcastObject> podcasts;
     private final OnPodcastClickListener listener;
 
-    public PodcastsRecyclerAdapter(
-            Fragment fragment, List<Podcast> podcasts, List<Integer> subscriberCounts, List<Integer> ratings, OnPodcastClickListener listener) {
+    public PodcastsRecyclerAdapter(Fragment fragment, OnPodcastClickListener listener) {
         this.fragment = fragment;
+        this.listener = listener;
+    }
+
+    /**
+     * Sets the data for the constructor, can't set this in constructor, because otherwise
+     * recyclerview logs an error "No adapter attached, skipping layout"
+     * @param podcasts The podcasts to display in the recyclerview
+     * @param subscriberCounts A list containing the number of subscribers for each podcast
+     * @param ratings A list containing the rating for each podcast (0-5)
+     */
+    public void setData(List<Podcast> podcasts, List<Integer> subscriberCounts, List<Integer> ratings) {
         this.podcasts = new ArrayList<>();
         for (int i = 0; i < podcasts.size(); i++) {
             this.podcasts.add(new PodcastObject(podcasts.get(i), subscriberCounts.get(i), ratings.get(i)));
         }
-        this.listener = listener;
         sortByPopularity();
+        notifyDataSetChanged();
     }
 
     public void sortByPopularity() {
@@ -73,6 +83,9 @@ public class PodcastsRecyclerAdapter extends RecyclerView.Adapter<PodcastsRecycl
 
     @Override
     public int getItemCount() {
+        if (podcasts == null) {
+            return 0;
+        }
         return podcasts.size();
     }
 

@@ -39,6 +39,7 @@ public class ExplorePodcastsFragment extends Fragment implements
         setHasOptionsMenu(true);
 
         dbRef = FirebaseDatabase.getInstance().getReference().child("podcasts");
+        adapter = new PodcastsRecyclerAdapter(this, this);
     }
 
     @Nullable
@@ -46,8 +47,10 @@ public class ExplorePodcastsFragment extends Fragment implements
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_explore_podcasts, container, false);
         podcastsRecycler = view.findViewById(R.id.explore_podcasts_recycler);
-        podcastsRecycler.setLayoutManager(new GridLayoutManager(getActivity(), 2));
         tabLayout = view.findViewById(R.id.explore_tab_layout);
+
+        podcastsRecycler.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+        podcastsRecycler.setAdapter(adapter);
         return view;
     }
 
@@ -105,11 +108,8 @@ public class ExplorePodcastsFragment extends Fragment implements
             ratings.add(avg);
         }
 
-        // Create adapter
-        adapter = new PodcastsRecyclerAdapter(
-                        ExplorePodcastsFragment.this,
-                        podcasts, subscriberCounts, ratings, this);
-        podcastsRecycler.setAdapter(adapter);
+        // Set the data to display
+        adapter.setData(podcasts, subscriberCounts, ratings);
     }
 
     @Override

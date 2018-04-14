@@ -2,7 +2,9 @@ package haakoleg.imt3673_podcast_manager.tasks;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteException;
 import android.support.v7.preference.PreferenceManager;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +37,12 @@ public class GetEpisodesTask extends Task<List<PodcastEpisode>> {
             podcastUrls.add(podcast.getUrl());
         }
 
-        resultObject = db.podcastEpisodeDAO().getEpisodes(podcastUrls, max);
-        return 0;
+        try {
+            resultObject = db.podcastEpisodeDAO().getEpisodes(podcastUrls, max);
+        } catch (SQLiteException e) {
+            Log.e(getClass().getName(), Log.getStackTraceString(e));
+            return ERROR_SQLITE;
+        }
+        return SUCCESSFUL;
     }
 }

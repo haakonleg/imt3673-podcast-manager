@@ -1,6 +1,8 @@
 package haakoleg.imt3673_podcast_manager.tasks;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteException;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,10 +22,15 @@ public class GetDownloadedEpisodesTask extends Task<List<PodcastEpisode>> {
     protected int doTask() {
         AppDatabase db = AppDatabase.getDb(context);
         List<PodcastEpisode> downloadedEpisodes = new ArrayList<>();
-        for (PodcastEpisode episode : db.podcastEpisodeDAO().getAllEpisodes()) {
-            if (episode.isDownloaded()) {
-                downloadedEpisodes.add(episode);
+        try {
+            for (PodcastEpisode episode : db.podcastEpisodeDAO().getAllEpisodes()) {
+                if (episode.isDownloaded()) {
+                    downloadedEpisodes.add(episode);
+                }
             }
+        } catch (SQLiteException e) {
+            Log.e(getClass().getName(), Log.getStackTraceString(e));
+            return ERROR_SQLITE;
         }
         resultObject = downloadedEpisodes;
         return SUCCESSFUL;

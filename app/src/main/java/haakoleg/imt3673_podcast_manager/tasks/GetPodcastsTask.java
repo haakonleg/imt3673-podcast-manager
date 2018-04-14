@@ -1,6 +1,8 @@
 package haakoleg.imt3673_podcast_manager.tasks;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteException;
+import android.util.Log;
 
 import java.util.List;
 
@@ -18,7 +20,12 @@ public class GetPodcastsTask extends Task<List<Podcast>> {
     @Override
     protected int doTask() {
         AppDatabase db = AppDatabase.getDb(context);
-        resultObject = db.podcastDAO().getAllPodcasts();
+        try {
+            resultObject = db.podcastDAO().getAllPodcasts();
+        } catch (SQLiteException e) {
+            Log.e(getClass().getName(), Log.getStackTraceString(e));
+            return ERROR_SQLITE;
+        }
         return SUCCESSFUL;
     }
 }

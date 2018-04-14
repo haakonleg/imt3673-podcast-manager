@@ -33,9 +33,11 @@ import haakoleg.imt3673_podcast_manager.tasks.Task;
  * It will order episodes in the list by the time it was published
  */
 
-public class ShowEpisodesFragment extends Fragment {
+public class ShowEpisodesFragment extends Fragment
+        implements EpisodesRecyclerAdapter.OnEpisodeClickListener {
     private RecyclerView episodesRecycler;
     private ArrayList<Podcast> podcasts;
+    private EpisodesRecyclerAdapter adapter;
     private boolean instanceDownloaded;
 
     /**
@@ -75,6 +77,7 @@ public class ShowEpisodesFragment extends Fragment {
         }
 
         podcasts = bundle.getParcelableArrayList("podcasts");
+        adapter = new EpisodesRecyclerAdapter(this, this);
     }
 
     @Override
@@ -88,6 +91,7 @@ public class ShowEpisodesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_show_episodes, container, false);
         episodesRecycler = view.findViewById(R.id.episodes_recycler);
+        episodesRecycler.setAdapter(adapter);
         return view;
     }
 
@@ -127,20 +131,16 @@ public class ShowEpisodesFragment extends Fragment {
         Task task;
         if (instanceDownloaded) {
             task = new GetDownloadedEpisodesTask(getActivity(), episodes -> {
-                EpisodesRecyclerAdapter adapter =
-                        new EpisodesRecyclerAdapter(this, new EpisodeClickListener(), podcasts, episodes);
-                episodesRecycler.setAdapter(adapter);
+                adapter.setData(podcasts, episodes);
             }, error -> {
-                // TODO: Handle error
+                Task.errorHandler(getActivity(), error);
             });
         } else {
             // Retrieve episodes from SQLite and create new adapter for the RecyclerView
             task = new GetEpisodesTask(getActivity(), podcasts, episodes -> {
-                EpisodesRecyclerAdapter adapter =
-                        new EpisodesRecyclerAdapter(this, new EpisodeClickListener(), podcasts, episodes);
-                episodesRecycler.setAdapter(adapter);
+                adapter.setData(podcasts, episodes);
             }, error -> {
-                // TODO: Handle error
+                Task.errorHandler(getActivity(), error);
             });
         }
         ThreadManager.get().execute(task);
@@ -166,16 +166,14 @@ public class ShowEpisodesFragment extends Fragment {
         }
     }
 
-    private class EpisodeClickListener implements EpisodesRecyclerAdapter.OnEpisodeClickListener {
-        @Override
-        public void onEpisodeClicked(PodcastEpisode episode, Podcast podcast) {
-            EpisodePlayerFragment fragment = EpisodePlayerFragment.newInstance(episode, podcast);
-            ((MainActivity)getActivity()).displayContent(fragment, "PlayEpisode");
-        }
+    @Override
+    public void onEpisodeClicked(PodcastEpisode episode, Podcast podcast) {
+        EpisodePlayerFragment fragment = EpisodePlayerFragment.newInstance(episode, podcast);
+        ((MainActivity)getActivity()).displayContent(fragment, "PlayEpisode");
+    }
 
-        @Override
-        public void onDownloadEpisodeClicked(PodcastEpisode episode) {
-            downloadEpisode(episode);
-        }
+    @Override
+    public void onDownloadEpisodeClicked(PodcastEpisode episode) {
+        downloadEpisode(episode);
     }
 }

@@ -17,6 +17,7 @@ import java.util.List;
 
 import haakoleg.imt3673_podcast_manager.models.Podcast;
 import haakoleg.imt3673_podcast_manager.tasks.DeletePodcastsTask;
+import haakoleg.imt3673_podcast_manager.tasks.Task;
 import haakoleg.imt3673_podcast_manager.utils.Messages;
 
 public class ManagePodcastsFragment extends Fragment implements ManagePodcastsRecyclerAdapter.ManagePodcastsListener {
@@ -97,7 +98,7 @@ public class ManagePodcastsFragment extends Fragment implements ManagePodcastsRe
             Toast.makeText(getActivity(), getString(R.string.podcast_deleted), Toast.LENGTH_SHORT).show();
             ((MainActivity)getActivity()).removePodcastFromDrawer(podcast);
         }, error -> {
-            // TODO: Handle error
+            Task.errorHandler(getActivity(), error);
         });
         ThreadManager.get().execute(task);
     }
