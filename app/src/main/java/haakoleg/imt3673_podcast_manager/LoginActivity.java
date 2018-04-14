@@ -3,6 +3,7 @@ package haakoleg.imt3673_podcast_manager;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.preference.PreferenceManager;
 import android.transition.Slide;
 import android.transition.TransitionManager;
 import android.view.Gravity;
@@ -38,8 +39,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // Set persistence for Firebase, this can only be run once or the app
-        // will crash if it is restarted
+        // will crash if it is restarted, also set default preferences
         if (!runOnce) {
+            PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
             runOnce = true;
         }

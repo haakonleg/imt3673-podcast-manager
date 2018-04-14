@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:key="items_per_podcast"
+        android:title="@string/pref_max_episodes"
+        android:summary="@string/pref_max_episodes_summary"
+        android:entries="@array/pref_max_episodes_entries"
+        android:entryValues="@array/pref_max_episodes_entries"
+        android:defaultValue="@string/pref_max_episodes_default" />
+
+</PreferenceScreen>

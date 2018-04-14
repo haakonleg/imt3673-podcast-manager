@@ -1,8 +1,8 @@
 package haakoleg.imt3673_podcast_manager.tasks;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteConstraintException;
-import android.util.Log;
+import android.content.SharedPreferences;
+import android.support.v7.preference.PreferenceManager;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -22,11 +22,16 @@ import haakoleg.imt3673_podcast_manager.models.PodcastEpisode;
 public class SyncPodcastTask extends Task<List<PodcastEpisode>> {
     private final Context context;
     private final Podcast podcast;
+    private final int max;
 
     public SyncPodcastTask(Context context, Podcast podcast, OnSuccessListener<List<PodcastEpisode>> successListener, OnErrorListener errorListener) {
         super(successListener, errorListener);
         this.context = context;
         this.podcast = podcast;
+
+        // Get max episodes per podcast from preferences
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        this.max = Integer.parseInt(prefs.getString("items_per_podcast", null));
     }
 
     @Override
@@ -86,8 +91,16 @@ public class SyncPodcastTask extends Task<List<PodcastEpisode>> {
             }
         }
 
-        // Add to room
+        // Insert new episodes into SQLite database
         db.podcastEpisodeDAO().insertEpisodes(updated);
+
+        // Check if old episodes need to be deleted, because the max amount of episodes
+        // per podcast has been reached or exceeded
+        int count = db.podcastEpisodeDAO().getCount(podcast.getUrl());
+        if (count > this.max) {
+            db.podcastEpisodeDAO().deleteOldEpisodes(podcast.getUrl(), count - max);
+        }
+
         return updated;
     }
 }

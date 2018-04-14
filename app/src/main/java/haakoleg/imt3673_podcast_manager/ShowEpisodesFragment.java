@@ -36,20 +36,17 @@ import haakoleg.imt3673_podcast_manager.tasks.Task;
 public class ShowEpisodesFragment extends Fragment {
     private RecyclerView episodesRecycler;
     private ArrayList<Podcast> podcasts;
-    private int count;
     private boolean instanceDownloaded;
 
     /**
      * Static factory method to create a new instance of ShowEpisodesFragment
      * @param podcasts List of podcasts to display episodes from
-     * @param count The amount of episodes to display
      * @return New Fragment instance
      */
-    public static ShowEpisodesFragment newInstance(ArrayList<Podcast> podcasts, int count) {
+    public static ShowEpisodesFragment newInstance(ArrayList<Podcast> podcasts) {
         ShowEpisodesFragment fragment = new ShowEpisodesFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("podcasts", podcasts);
-        bundle.putInt("count", count);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -58,7 +55,6 @@ public class ShowEpisodesFragment extends Fragment {
         ShowEpisodesFragment fragment = new ShowEpisodesFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("podcasts", podcasts);
-        bundle.putInt("count", 0);
         fragment.setArguments(bundle);
         fragment.instanceDownloaded = true;
         return fragment;
@@ -79,14 +75,12 @@ public class ShowEpisodesFragment extends Fragment {
         }
 
         podcasts = bundle.getParcelableArrayList("podcasts");
-        count = bundle.getInt("count");
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList("podcasts", podcasts);
-        outState.putInt("count", count);
     }
 
     @Nullable

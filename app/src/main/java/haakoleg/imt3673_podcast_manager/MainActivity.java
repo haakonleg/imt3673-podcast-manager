@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void showHomeFragment() {
         // Show home fragment containing recent episodes from all podcasts
-        ShowEpisodesFragment fragment = ShowEpisodesFragment.newInstance(new ArrayList<>(this.podcasts.values()), 50);
+        ShowEpisodesFragment fragment = ShowEpisodesFragment.newInstance(new ArrayList<>(this.podcasts.values()));
         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment, "HomeFragment").commit();
     }
 
@@ -291,8 +291,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 displayContent(ShowEpisodesFragment.newInstanceDownloaded(new ArrayList<>(podcasts.values())), "DownloadedEpisodes");
                 break;
             case R.id.nav_manage:
-                getSupportFragmentManager().popBackStack();
                 displayContent(ManagePodcastsFragment.newInstance(new ArrayList<>(podcasts.values())), "ManagePodcasts");
+                break;
+            case R.id.nav_settings:
+                SettingsFragment settingsFragment = new SettingsFragment();
+                displayContent(settingsFragment, "SettingsFragment");
                 break;
             case R.id.nav_logout:
                 signOut();
@@ -302,13 +305,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Podcast podcast = podcasts.get(id);
                 ArrayList<Podcast> singlePodcast = new ArrayList<>();
                 singlePodcast.add(podcast);
-                ShowEpisodesFragment fragment = ShowEpisodesFragment.newInstance(singlePodcast, 50);
+                ShowEpisodesFragment fragment = ShowEpisodesFragment.newInstance(singlePodcast);
                 getSupportFragmentManager().popBackStack();
                 displayContent(fragment, "ShowEpisodes");
                 break;
         }
 
-        drawerLayout.closeDrawers();
+        if (id != R.id.nav_add_feed) {
+            drawerLayout.closeDrawers();
+        }
         return true;
     }
 

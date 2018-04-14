@@ -39,4 +39,13 @@
     <string name="username_input">Username</string>
     <string name="already_have_account">I already have an account</string>
     <string name="error_username_len">Username must be 3 or more characters</string>
+    <string name="pref_max_episodes">Max episodes per podcast</string>
+    <string name="pref_max_episodes_summary">Choose max amount of episodes to store per podcast</string>
+    <string-array name="pref_max_episodes_entries">
+        <item>25</item>
+        <item>50</item>
+        <item>75</item>
+        <item>100</item>
+    </string-array>
+    <string name="pref_max_episodes_default">50</string>
 </resources>
