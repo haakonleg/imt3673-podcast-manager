@@ -33,9 +33,6 @@ public class DisplayPodcastFragment extends Fragment implements ChildEventListen
 
     private FloatingActionButton addFab;
     private FloatingActionButton commentFab;
-    private ImageView podcastImg;
-    private TextView podcastTitleTxt;
-    private TextView podcastDescriptionTxt;
     private RecyclerView commentsRecycler;
 
     public static DisplayPodcastFragment newInstance(Podcast podcast) {
@@ -70,10 +67,10 @@ public class DisplayPodcastFragment extends Fragment implements ChildEventListen
         View view = inflater.inflate(R.layout.fragment_display_podcast, container, false);
         addFab = view.findViewById(R.id.podcast_add_fab);
         commentFab = view.findViewById(R.id.podcast_comment_fab);
-        podcastImg = view.findViewById(R.id.podcast_img);
-        podcastTitleTxt = view.findViewById(R.id.podcast_title_txt);
-        podcastDescriptionTxt = view.findViewById(R.id.podcast_description_txt);
         commentsRecycler = view.findViewById(R.id.podcast_comments_recycler);
+        ImageView podcastImg = view.findViewById(R.id.podcast_img);
+        TextView podcastTitleTxt = view.findViewById(R.id.podcast_title_txt);
+        TextView podcastDescriptionTxt = view.findViewById(R.id.podcast_description_txt);
 
         // Set up elements
         Glide.with(this).load(podcast.getImage()).into(podcastImg);
@@ -134,21 +131,21 @@ public class DisplayPodcastFragment extends Fragment implements ChildEventListen
 
     @Override
     public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+        // Unused
     }
 
     @Override
     public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+        // Unused
     }
 
     @Override
     public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
+        // Unused
     }
 
     @Override
     public void onCancelled(DatabaseError databaseError) {
-
+        // Unused
     }
 }

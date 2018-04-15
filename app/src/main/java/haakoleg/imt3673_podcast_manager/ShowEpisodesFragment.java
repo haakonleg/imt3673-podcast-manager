@@ -35,7 +35,8 @@ import haakoleg.imt3673_podcast_manager.tasks.Task;
 
 public class ShowEpisodesFragment extends Fragment
         implements EpisodesRecyclerAdapter.OnEpisodeClickListener {
-    private RecyclerView episodesRecycler;
+    private static final String BUNDLE_PODCAST = "podcasts";
+
     private ArrayList<Podcast> podcasts;
     private EpisodesRecyclerAdapter adapter;
     private boolean instanceDownloaded;
@@ -48,7 +49,7 @@ public class ShowEpisodesFragment extends Fragment
     public static ShowEpisodesFragment newInstance(ArrayList<Podcast> podcasts) {
         ShowEpisodesFragment fragment = new ShowEpisodesFragment();
         Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList("podcasts", podcasts);
+        bundle.putParcelableArrayList(BUNDLE_PODCAST, podcasts);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -56,7 +57,7 @@ public class ShowEpisodesFragment extends Fragment
     public static ShowEpisodesFragment newInstanceDownloaded(ArrayList<Podcast> podcasts) {
         ShowEpisodesFragment fragment = new ShowEpisodesFragment();
         Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList("podcasts", podcasts);
+        bundle.putParcelableArrayList(BUNDLE_PODCAST, podcasts);
         fragment.setArguments(bundle);
         fragment.instanceDownloaded = true;
         return fragment;
@@ -76,21 +77,21 @@ public class ShowEpisodesFragment extends Fragment
             bundle = getArguments();
         }
 
-        podcasts = bundle.getParcelableArrayList("podcasts");
+        podcasts = bundle.getParcelableArrayList(BUNDLE_PODCAST);
         adapter = new EpisodesRecyclerAdapter(this, this);
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList("podcasts", podcasts);
+        outState.putParcelableArrayList(BUNDLE_PODCAST, podcasts);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_show_episodes, container, false);
-        episodesRecycler = view.findViewById(R.id.episodes_recycler);
+        RecyclerView episodesRecycler = view.findViewById(R.id.episodes_recycler);
         episodesRecycler.setAdapter(adapter);
         return view;
     }
@@ -130,18 +131,14 @@ public class ShowEpisodesFragment extends Fragment
     private void fetchEpisodes() {
         Task task;
         if (instanceDownloaded) {
-            task = new GetDownloadedEpisodesTask(getActivity(), episodes -> {
-                adapter.setData(podcasts, episodes);
-            }, error -> {
-                Task.errorHandler(getActivity(), error);
-            });
+            task = new GetDownloadedEpisodesTask(getActivity(),
+                    episodes -> adapter.setData(podcasts, episodes),
+                    error -> Task.errorHandler(getActivity(), error));
         } else {
             // Retrieve episodes from SQLite and create new adapter for the RecyclerView
-            task = new GetEpisodesTask(getActivity(), podcasts, episodes -> {
-                adapter.setData(podcasts, episodes);
-            }, error -> {
-                Task.errorHandler(getActivity(), error);
-            });
+            task = new GetEpisodesTask(getActivity(), podcasts,
+                    episodes -> adapter.setData(podcasts, episodes),
+                    error -> Task.errorHandler(getActivity(), error));
         }
         ThreadManager.get().execute(task);
     }

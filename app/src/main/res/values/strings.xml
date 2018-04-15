@@ -51,4 +51,6 @@
     <string name="error_download">There was an error downloading this podcast</string>
     <string name="error_parse">There was an error parsing this podcast</string>
     <string name="error_sqlite">There was an error with SQLite</string>
+    <string name="error_unknown">Unknown error</string>
+    <string name="duration_start">00:00/00:00</string>
 </resources>

@@ -12,7 +12,7 @@ import java.util.List;
 
 import haakoleg.imt3673_podcast_manager.models.Comment;
 
-public class CommentsRecyclerAdapter extends RecyclerView.Adapter<CommentsRecyclerAdapter.ViewHolder> {
+public class CommentsRecyclerAdapter extends RecyclerView.Adapter<CommentsRecyclerAdapter.CommentHolder> {
     private final List<Comment> comments;
 
     public CommentsRecyclerAdapter(List<Comment> comments) {
@@ -26,14 +26,14 @@ public class CommentsRecyclerAdapter extends RecyclerView.Adapter<CommentsRecycl
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public CommentHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.view_comment, parent, false);
-        return new ViewHolder(itemView);
+        return new CommentHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull CommentHolder holder, int position) {
         Comment comment = comments.get(position);
 
         holder.usernameTxt.setText(comment.getUsername());
@@ -46,12 +46,12 @@ public class CommentsRecyclerAdapter extends RecyclerView.Adapter<CommentsRecycl
         return comments.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class CommentHolder extends RecyclerView.ViewHolder {
         final TextView usernameTxt;
         final RatingBar rating;
         final TextView commentTxt;
 
-        ViewHolder(View itemView) {
+        CommentHolder(View itemView) {
             super(itemView);
             usernameTxt = itemView.findViewById(R.id.username_txt);
             rating = itemView.findViewById(R.id.comment_rating);

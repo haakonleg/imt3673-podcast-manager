@@ -1,19 +1,11 @@
 package haakoleg.imt3673_podcast_manager.parsers;
 
-import android.util.Log;
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import haakoleg.imt3673_podcast_manager.models.Podcast;
 import haakoleg.imt3673_podcast_manager.models.PodcastEpisode;
@@ -156,7 +148,7 @@ public class RSSParser extends Parser {
         String[] vals = duration.split(":");
         for (int i = 0; i < vals.length; i++) {
             int value = Integer.parseInt(vals[i]);
-            seconds += (value * Math.pow(60, (vals.length-1) - i));
+            seconds += (value * Math.pow(60, (double)(vals.length-1) - i));
         }
         return seconds;
     }

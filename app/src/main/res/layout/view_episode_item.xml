@@ -30,7 +30,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="EPISODE_TITLE"
                 android:maxLines="1"
                 android:textAppearance="@android:style/TextAppearance.Material"
                 app:layout_constraintEnd_toStartOf="@+id/episode_save_btn"
@@ -43,7 +42,6 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="2dp"
                 android:maxLines="4"
-                android:text="EPISODE_DESCRIPTION"
                 app:layout_constraintEnd_toStartOf="@+id/episode_save_btn"
                 app:layout_constraintStart_toEndOf="@+id/episode_img"
                 app:layout_constraintTop_toBottomOf="@+id/episode_title_txt" />
@@ -63,7 +61,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="PODCAST_TITLE"
                 app:layout_constraintTop_toBottomOf="@+id/episode_img" />
 
             <TextView
@@ -71,7 +68,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="4dp"
-                android:text="EPISODE_DURATION"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 

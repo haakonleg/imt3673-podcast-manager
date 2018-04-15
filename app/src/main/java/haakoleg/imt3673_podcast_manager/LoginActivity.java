@@ -31,8 +31,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private View loginView;
     private View registerView;
-    private EditText emailInput;
-    private EditText passwordInput;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +56,8 @@ public class LoginActivity extends AppCompatActivity {
             setContentView(R.layout.activity_login);
             loginView = findViewById(R.id.sign_in_view);
             registerView = findViewById(R.id.register_view);
-            emailInput = findViewById(R.id.email_input);
-            passwordInput = findViewById(R.id.password_input);
+            EditText emailInput = findViewById(R.id.email_input);
+            EditText passwordInput = findViewById(R.id.password_input);
 
             TextView showregisterBtn = findViewById(R.id.show_register_btn);
             TextView showLoginBtn = findViewById(R.id.show_login_btn);
@@ -143,7 +141,7 @@ public class LoginActivity extends AppCompatActivity {
 
         fAuth.createUserWithEmailAndPassword(email, password).addOnSuccessListener(result -> {
             FirebaseUser user = fAuth.getCurrentUser();
-
+            
             // Set user display name
             UserProfileChangeRequest changeRequest = new UserProfileChangeRequest.Builder()
                     .setDisplayName(username)
@@ -153,9 +151,7 @@ public class LoginActivity extends AppCompatActivity {
             // Save user to database
             dbRef.child("users").child(user.getUid()).setValue(new User(username, user.getEmail()));
             goToMain();
-        }).addOnFailureListener(ex -> {
-            Messages.showError(this, ex.getLocalizedMessage(), null);
-        });
+        }).addOnFailureListener(ex -> Messages.showError(this, ex.getLocalizedMessage(), null));
     }
 
     /**
@@ -172,8 +168,6 @@ public class LoginActivity extends AppCompatActivity {
 
         fAuth.signInWithEmailAndPassword(email, password).addOnSuccessListener(result ->
                 goToMain()
-        ).addOnFailureListener(ex -> {
-            Messages.showError(this, ex.getLocalizedMessage(), null);
-        });
+        ).addOnFailureListener(ex -> Messages.showError(this, ex.getLocalizedMessage(), null));
     }
 }

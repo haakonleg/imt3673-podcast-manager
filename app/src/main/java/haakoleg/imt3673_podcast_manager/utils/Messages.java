@@ -6,6 +6,8 @@ import android.content.Context;
 import haakoleg.imt3673_podcast_manager.R;
 
 public class Messages {
+    private Messages() {}
+
     public static void showError(Context context, String message, AlertDialog.OnDismissListener cb) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(R.string.dialog_error);

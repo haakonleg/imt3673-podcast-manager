@@ -23,7 +23,7 @@ import haakoleg.imt3673_podcast_manager.models.PodcastEpisode;
  * Adapter used for the RecyclerView in ShowEpisodesFragment
  */
 
-public class EpisodesRecyclerAdapter extends RecyclerView.Adapter<EpisodesRecyclerAdapter.ViewHolder> {
+public class EpisodesRecyclerAdapter extends RecyclerView.Adapter<EpisodesRecyclerAdapter.EpisodeHolder> {
     private final Fragment fragment;
     private final OnEpisodeClickListener listener;
     private HashMap<String, Podcast> podcasts;
@@ -56,14 +56,14 @@ public class EpisodesRecyclerAdapter extends RecyclerView.Adapter<EpisodesRecycl
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public EpisodeHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.view_episode_item, parent, false);
-        return new ViewHolder(itemView);
+        return new EpisodeHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull EpisodeHolder holder, int position) {
         PodcastEpisode episode = episodes.get(position);
         Podcast podcast = podcasts.get(episode.getParentUrl());
 
@@ -101,9 +101,9 @@ public class EpisodesRecyclerAdapter extends RecyclerView.Adapter<EpisodesRecycl
     }
 
     /**
-     * ViewHolder for layout "view_episode_item"
+     * CommentHolder for layout "view_episode_item"
      */
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class EpisodeHolder extends RecyclerView.ViewHolder {
         final ImageView img;
         final TextView titleTxt;
         final TextView descTxt;
@@ -111,7 +111,7 @@ public class EpisodesRecyclerAdapter extends RecyclerView.Adapter<EpisodesRecycl
         final TextView podcastTxt;
         final TextView durationTxt;
 
-        ViewHolder(View itemView) {
+        EpisodeHolder(View itemView) {
             super(itemView);
             img = itemView.findViewById(R.id.episode_img);
             titleTxt = itemView.findViewById(R.id.episode_title_txt);

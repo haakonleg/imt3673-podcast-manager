@@ -12,6 +12,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.transition.Fade;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -47,11 +48,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final File DOWNLOAD_DIR = new File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "/podcastmanager/");
 
-    public DrawerLayout drawerLayout;
+    // This contains all podcasts the user has saved
+    private final HashMap<Integer, Podcast> podcasts;
     private SubMenu subscriptionsMenu;
 
-    // This contains all podcasts the user has saved
-    private HashMap<Integer, Podcast> podcasts;
+    // This must be public so it can be accessed in fragments, to lock/unlock drawer
+    public DrawerLayout drawerLayout;
+
+    public MainActivity() {
+        podcasts = new HashMap<>();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +80,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Menu navMenu = navView.getMenu();
         subscriptionsMenu = navMenu.addSubMenu(R.id.nav_subscriptions, R.id.nav_subscriptions_submenu, Menu.NONE, R.string.my_subscriptions);
 
-        this.podcasts = new HashMap<>();
         initialize();
     }
 
@@ -93,10 +98,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * internet connection, and adds them to the list of podcasts in the drawer menu
      */
     private void initialize() {
-        GetPodcastsTask task = new GetPodcastsTask(this, podcasts -> {
+        GetPodcastsTask task = new GetPodcastsTask(this, storedPodcasts -> {
             // Add locally stored podcasts to the drawer menu
             List<String> localUrls = new ArrayList<>();
-            for (Podcast podcast : podcasts) {
+            for (Podcast podcast : storedPodcasts) {
                 addPodcastToDrawer(podcast);
                 localUrls.add(podcast.getUrl());
             }
@@ -108,9 +113,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 parsePodcasts(localUrls, this::syncPodcast);
                 syncWithFirebase(localUrls);
             }
-        }, error -> {
-            Task.errorHandler(this, error);
-        });
+        }, error -> Task.errorHandler(this, error));
         ThreadManager.get().execute(task);
     }
 
@@ -143,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                // Unused
             }
         });
     }
@@ -155,19 +158,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     private void parsePodcasts(List<String> podcastUrls, ParseCallback cb) {
         for (String url : podcastUrls) {
-            ParsePodcastTask task = new ParsePodcastTask(this, url, cb::onPodcastParsed, error -> {
-                Task.errorHandler(this, error);
-            });
+            ParsePodcastTask task = new ParsePodcastTask(
+                    this, url,
+                    cb::onPodcastParsed,
+                    error -> Task.errorHandler(this, error));
             ThreadManager.get().execute(task);
         }
     }
 
     private void syncPodcast(Podcast podcast) {
-        SyncPodcastTask task = new SyncPodcastTask(this, podcast, updatedEpisodes -> {
-            Log.d("Synced", podcast.getUrl());
-        }, error -> {
-            Task.errorHandler(this, error);
-        });
+        SyncPodcastTask task = new SyncPodcastTask(this, podcast,
+                updatedEpisodes -> Log.d("Synced", podcast.getUrl()),
+                error -> Task.errorHandler(this, error));
         ThreadManager.get().execute(task);
     }
 
@@ -228,9 +230,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Add podcast to drawer and sync
             addPodcastToDrawer(podcast);
             syncPodcast(podcast);
-        }, error -> {
-            Task.errorHandler(this, error);
-        });
+        }, error -> Task.errorHandler(this, error));
         ThreadManager.get().execute(task);
     }
 
@@ -241,6 +241,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @param tag The tag used for identifying the fragment in the backstack
      */
     public void displayContent(Fragment fragment, String tag) {
+        fragment.setEnterTransition(new Fade().setDuration(500));
+        fragment.setExitTransition(new Fade().setDuration(500));
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.main_content, fragment)
                 .addToBackStack(tag).commit();
@@ -256,9 +258,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DeletePodcastsTask task = new DeletePodcastsTask(this, allPodcasts, false, res -> {
             FirebaseAuth.getInstance().signOut();
             finish();
-        }, error -> {
-            Task.errorHandler(this, error);
-        });
+        }, error -> Task.errorHandler(this, error));
         ThreadManager.get().execute(task);
     }
 

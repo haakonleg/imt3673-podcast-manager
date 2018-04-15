@@ -17,17 +17,17 @@ import haakoleg.imt3673_podcast_manager.models.Podcast;
  * Contains common methods used by all parsers, such as reading a text node
  * and skipping tags.
  */
-public abstract class Parser {
-    protected final XmlPullParser parser;
+abstract class Parser {
+    final XmlPullParser parser;
 
-    protected Parser(XmlPullParser parser) {
+    Parser(XmlPullParser parser) {
         this.parser = parser;
     }
 
     // Must be overridden, this will parse the podcast
     public abstract void parse (Podcast podcast) throws XmlPullParserException, IOException;
 
-    protected long readDate(XmlPullParser parser, SimpleDateFormat sdf) throws IOException, XmlPullParserException {
+    long readDate(XmlPullParser parser, SimpleDateFormat sdf) throws IOException, XmlPullParserException {
         String toFormat = readText(parser);
         try {
             Date date = sdf.parse(toFormat);
@@ -38,7 +38,7 @@ public abstract class Parser {
         }
     }
 
-    protected String readAttributeValue(XmlPullParser parser, String name) throws IOException, XmlPullParserException {
+    String readAttributeValue(XmlPullParser parser, String name) throws IOException, XmlPullParserException {
         String result = parser.getAttributeValue(null, name);
         if (result != null) {
             if (parser.getEventType() != XmlPullParser.END_TAG) {
@@ -59,7 +59,7 @@ public abstract class Parser {
      * @param parser The xmlpullparser object
      * @return Returns the text contained in the current node, if there is no text an empty string is returned
      */
-    protected String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
+    String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
         String result = "";
         if (parser.next() == XmlPullParser.TEXT) {
             result = parser.getText();
@@ -73,7 +73,7 @@ public abstract class Parser {
      * Ref: https://developer.android.com/training/basics/network-ops/xml.html
      * @param parser The xmlpullparser object
      */
-    protected void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
+    void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
         if (parser.getEventType() != XmlPullParser.START_TAG) {
             throw new IllegalStateException();
         }

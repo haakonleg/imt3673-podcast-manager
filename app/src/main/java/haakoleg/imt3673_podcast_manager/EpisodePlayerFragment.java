@@ -45,6 +45,9 @@ import haakoleg.imt3673_podcast_manager.models.PodcastEpisode;
  */
 
 public class EpisodePlayerFragment extends Fragment {
+    private static final String BUNDLE_EPISODE = "podcast_episode";
+    private static final String BUNDLE_PODCAST = "podcast";
+
     private PodcastEpisode episode;
     private Podcast podcast;
     private MediaBrowserCompat mediaBrowser;
@@ -55,11 +58,9 @@ public class EpisodePlayerFragment extends Fragment {
     private ImageButton playBtn;
     private ImageButton forwardBtn;
     private TextView durationTxt;
-    private TextView podcastTitleTxt;
-    private TextView episodeTitleTxt;
     private SeekBar seekBar;
 
-    boolean isFirstInstance = true;
+    private boolean isFirstInstance = true;
 
     /**
      * Static factory method for creating a new instance of EpisodePlayerFragment
@@ -70,8 +71,8 @@ public class EpisodePlayerFragment extends Fragment {
     public static EpisodePlayerFragment newInstance(PodcastEpisode episode, Podcast podcast) {
         EpisodePlayerFragment fragment = new EpisodePlayerFragment();
         Bundle bundle = new Bundle();
-        bundle.putParcelable("podcast_episode", episode);
-        bundle.putParcelable("podcast", podcast);
+        bundle.putParcelable(BUNDLE_EPISODE, episode);
+        bundle.putParcelable(BUNDLE_PODCAST, podcast);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -90,8 +91,8 @@ public class EpisodePlayerFragment extends Fragment {
             bundle = getArguments();
         }
 
-        episode = bundle.getParcelable("podcast_episode");
-        podcast = bundle.getParcelable("podcast");
+        episode = bundle.getParcelable(BUNDLE_EPISODE);
+        podcast = bundle.getParcelable(BUNDLE_PODCAST);
         controllerCallback = new ControllerCallback();
         startPlaybackService();
     }
@@ -103,7 +104,7 @@ public class EpisodePlayerFragment extends Fragment {
     private void startPlaybackService() {
         // Start service
         getActivity().startService(new Intent(getActivity(), EpisodePlaybackService.class));
-        mediaBrowser = new MediaBrowserCompat(getActivity(), new ComponentName(getActivity(), EpisodePlaybackService.class), new ConnectionCallback(), null);
+        mediaBrowser = new MediaBrowserCompat(getActivity(), new ComponentName(getActivity(), EpisodePlaybackService.class), new PlaybackServiceCallback(), null);
         // Set media to play
         MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder();
         builder.setTitle(podcast.getTitle());
@@ -136,9 +137,9 @@ public class EpisodePlayerFragment extends Fragment {
         playBtn = view.findViewById(R.id.player_play_btn);
         forwardBtn = view.findViewById(R.id.player_forward_btn);
         durationTxt = view.findViewById(R.id.player_duration);
-        podcastTitleTxt = view.findViewById(R.id.player_podcast_title);
-        episodeTitleTxt = view.findViewById(R.id.player_episode_title);
         seekBar = view.findViewById(R.id.player_seekbar);
+        TextView podcastTitleTxt = view.findViewById(R.id.player_podcast_title);
+        TextView episodeTitleTxt = view.findViewById(R.id.player_episode_title);
 
         podcastTitleTxt.setText(podcast.getTitle());
         episodeTitleTxt.setText(episode.getTitle());
@@ -156,8 +157,8 @@ public class EpisodePlayerFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable("podcast_episode", episode);
-        outState.putParcelable("podcast", podcast);
+        outState.putParcelable(BUNDLE_EPISODE, episode);
+        outState.putParcelable(BUNDLE_PODCAST, podcast);
     }
 
     @Override
@@ -202,64 +203,9 @@ public class EpisodePlayerFragment extends Fragment {
     }
 
     /**
-     * This binds all the UI elements used for controlling the player to their
-     * actions.
-     */
-    private void bindPlayerControls() {
-        // Set listener for rewind button
-        rewindBtn.setOnClickListener(v -> {
-            MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
-            controller.getTransportControls().rewind();
-        });
-
-        // Set listener for play/pause button
-        playBtn.setOnClickListener(v -> {
-            MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
-            int state = controller.getPlaybackState().getState();
-
-            switch (state) {
-                case PlaybackStateCompat.STATE_PLAYING:
-                    controller.getTransportControls().pause();
-                    break;
-                case PlaybackStateCompat.STATE_PAUSED:
-                    controller.getTransportControls().play();
-                    break;
-                case PlaybackStateCompat.STATE_STOPPED:
-                    progressBar.setVisibility(View.VISIBLE);
-                    startPlaybackService();
-                    mediaBrowser.connect();
-                    break;
-            }
-        });
-
-        // Set listener for forward button
-        forwardBtn.setOnClickListener(v -> {
-            MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
-            controller.getTransportControls().fastForward();
-        });
-
-        // Set listener for scrollbar. Only onStopTrackingTouch is overridden so that
-        // the action is only triggered when an actual user seeks in the audio
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) { }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) { }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
-                long milliProgress = (long) seekBar.getProgress() * 1000;
-                controller.getTransportControls().seekTo(milliProgress);
-            }
-        });
-    }
-
-    /**
      * Callback for when the activity is connected to the MediaBrowserService
      */
-    private class ConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
+    private class PlaybackServiceCallback extends MediaBrowserCompat.ConnectionCallback {
         @Override
         public void onConnected() {
             MediaSessionCompat.Token token = mediaBrowser.getSessionToken();
@@ -287,16 +233,6 @@ public class EpisodePlayerFragment extends Fragment {
                 Log.e("EpisodePlayerFragment", Log.getStackTraceString(e));
             }
         }
-
-        @Override
-        public void onConnectionSuspended() {
-            super.onConnectionSuspended();
-        }
-
-        @Override
-        public void onConnectionFailed() {
-            super.onConnectionFailed();
-        }
     }
 
     /**
@@ -304,6 +240,66 @@ public class EpisodePlayerFragment extends Fragment {
      * when audio is paused, buffering, position changes etc
      */
     private class ControllerCallback extends MediaControllerCompat.Callback {
+
+        /**
+         * This binds all the UI elements used for controlling the player to their
+         * actions.
+         */
+        private void bindPlayerControls() {
+            // Set listener for rewind button
+            rewindBtn.setOnClickListener(v -> {
+                MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
+                controller.getTransportControls().rewind();
+            });
+
+            // Set listener for play/pause button
+            playBtn.setOnClickListener(v -> {
+                MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
+                int state = controller.getPlaybackState().getState();
+
+                switch (state) {
+                    case PlaybackStateCompat.STATE_PLAYING:
+                        controller.getTransportControls().pause();
+                        break;
+                    case PlaybackStateCompat.STATE_PAUSED:
+                        controller.getTransportControls().play();
+                        break;
+                    case PlaybackStateCompat.STATE_STOPPED:
+                        progressBar.setVisibility(View.VISIBLE);
+                        startPlaybackService();
+                        mediaBrowser.connect();
+                        break;
+                }
+            });
+
+            // Set listener for forward button
+            forwardBtn.setOnClickListener(v -> {
+                MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
+                controller.getTransportControls().fastForward();
+            });
+
+            // Set listener for scrollbar. Only onStopTrackingTouch is overridden so that
+            // the action is only triggered when an actual user seeks in the audio
+            seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    // Unused
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    // Unused
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
+                    long milliProgress = (long) seekBar.getProgress() * 1000;
+                    controller.getTransportControls().seekTo(milliProgress);
+                }
+            });
+        }
+
         @Override
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
             switch (state.getState()) {
@@ -326,7 +322,6 @@ public class EpisodePlayerFragment extends Fragment {
                     seekBar.setProgress((int) state.getPosition() / 1000);
 
                     // Update duration text
-                    // TODO: Maybe improve
                     final String formattedDuration = String.format(Locale.getDefault(), "%02d:%02d/%02d:%02d",
                             TimeUnit.MILLISECONDS.toMinutes(position), TimeUnit.MILLISECONDS.toSeconds(position) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(position)),
                             TimeUnit.MILLISECONDS.toMinutes(duration), TimeUnit.MILLISECONDS.toSeconds(duration) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration)));

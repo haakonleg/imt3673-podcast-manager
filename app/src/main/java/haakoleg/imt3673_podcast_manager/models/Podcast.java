@@ -32,11 +32,12 @@ public class Podcast implements Parcelable {
     @Ignore
     private List<PodcastEpisode> episodes;
 
-    public Podcast() {
-        episodes = new ArrayList<>();
-    }
+    public Podcast() { }
 
     public void addEpisode(PodcastEpisode episode) {
+        if (episodes == null) {
+            episodes = new ArrayList<>();
+        }
         episodes.add(episode);
     }
 
@@ -147,5 +148,15 @@ public class Podcast implements Parcelable {
     @Override
     public int hashCode() {
         return Objects.hash(this.url);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Podcast)) {
+            return false;
+        }
+
+        Podcast o = (Podcast) obj;
+        return this.url.equals(o.url);
     }
 }

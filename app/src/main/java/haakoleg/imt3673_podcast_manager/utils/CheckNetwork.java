@@ -6,6 +6,8 @@ import android.net.NetworkInfo;
 
 public class CheckNetwork {
 
+    private CheckNetwork() {}
+
     /**
      * Checks whether a network connection exists and it is possible to send and retrieve date
      * over the network

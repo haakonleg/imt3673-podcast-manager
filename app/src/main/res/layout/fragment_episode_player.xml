@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@id/player_podcast_title"
         android:layout_centerHorizontal="true"
-        android:text="00:00/00:00" />
+        android:text="@string/duration_start" />
 
     <TextView
         android:id="@+id/player_podcast_title"
@@ -44,8 +44,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="5dp"
-        android:layout_above="@id/player_episode_title"
-        android:text="PODCAST_TITLE" />
+        android:layout_above="@id/player_episode_title" />
 
     <TextView
         android:id="@+id/player_episode_title"
@@ -54,7 +53,6 @@
         android:layout_above="@id/player_play_btn"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="5dp"
-        android:text="EPISODE_TITLE"
         android:textAppearance="@android:style/TextAppearance.Material" />
 
     <ImageButton

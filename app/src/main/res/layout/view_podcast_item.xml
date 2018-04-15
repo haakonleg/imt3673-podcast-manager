@@ -29,7 +29,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/podcast_img"
-            android:text="PODCAST_TITLE"
             android:maxLines="1"
             android:textAppearance="@android:style/TextAppearance.Material" />
 
@@ -37,8 +36,7 @@
             android:id="@+id/podcast_category_txt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/podcast_title_txt"
-            android:text="PODCAST_CATEGORY" />
+            android:layout_below="@id/podcast_title_txt" />
 
         <RatingBar
             android:id="@+id/podcast_rating"
@@ -56,8 +54,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/podcast_category_txt"
-            android:layout_alignParentEnd="true"
-            android:text="SUBSCRIBERS" />
+            android:layout_alignParentEnd="true" />
 
 
     </RelativeLayout>

@@ -84,7 +84,7 @@ public class SyncPodcastTask extends Task<List<PodcastEpisode>> {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                // Unused
             }
         });
     }

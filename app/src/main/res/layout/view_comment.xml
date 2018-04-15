@@ -10,7 +10,6 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="2dp"
         android:layout_toStartOf="@id/comment_rating"
-        android:text="USERNAME_TXT"
         android:textAppearance="@android:style/TextAppearance.Material" />
 
     <RatingBar
@@ -28,6 +27,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/username_txt"
-        android:text="COMMENT_TXT"
         android:lines="2"/>
 </RelativeLayout>

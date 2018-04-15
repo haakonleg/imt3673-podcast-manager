@@ -137,7 +137,16 @@ public class PodcastEpisode implements Parcelable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(parentUrl, title, description,
-                link, audioUrl, duration, updated);
+        return Objects.hash(parentUrl, audioUrl);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof PodcastEpisode)) {
+            return false;
+        }
+
+        PodcastEpisode o = (PodcastEpisode) obj;
+        return this.parentUrl.equals(o.parentUrl) && this.audioUrl.equals(o.audioUrl);
     }
 }

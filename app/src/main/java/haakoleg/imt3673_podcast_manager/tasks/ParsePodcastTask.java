@@ -46,7 +46,7 @@ public class ParsePodcastTask extends Task<Podcast> {
                 this.url = parseItunesLink();
             }
         } catch (IOException | JSONException e) {
-            Log.e("ParsePodcastTask", Log.getStackTraceString(e));
+            Log.e(getClass().getName(), Log.getStackTraceString(e));
             return ERROR_PARSE;
         }
 
@@ -57,7 +57,7 @@ public class ParsePodcastTask extends Task<Podcast> {
                 return ERROR_DOWNLOAD;
             }
         } catch (IOException e) {
-            Log.e("ParsePodcastTask", Log.getStackTraceString(e));
+            Log.e(getClass().getName(), Log.getStackTraceString(e));
             return ERROR_DOWNLOAD;
         }
 
@@ -70,7 +70,7 @@ public class ParsePodcastTask extends Task<Podcast> {
                 podcast.setUrl(this.url);
             }
         } catch (XmlPullParserException | IOException e) {
-            Log.e("ParsePodcastTask", Log.getStackTraceString(e));
+            Log.e(getClass().getName(), Log.getStackTraceString(e));
             return ERROR_PARSE;
         }
 
@@ -79,21 +79,23 @@ public class ParsePodcastTask extends Task<Podcast> {
     }
 
     private String download() throws IOException {
-        URL url = new URL(this.url);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        URL podcastUrl = new URL(url);
+        HttpURLConnection conn = (HttpURLConnection) podcastUrl.openConnection();
 
         // Handle response code
-        int response = conn.getResponseCode();
-        // If response was OK, set the input stream
         BufferedReader in;
-        if (response == 200) {
-            in = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
+        switch (conn.getResponseCode()) {
+            // If response was OK, set the input stream
+            case 200:
+                in = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
+                break;
             // Redirect codes
-        } else if (response == 301 || response == 302) {
-            this.url = conn.getHeaderField("Location");
-            return download();
-        } else {
-            return null;
+            case 301:
+            case 302:
+                url = conn.getHeaderField("Location");
+                return download();
+            default:
+                return null;
         }
 
         // Read each byte until no more data in stream
@@ -116,13 +118,13 @@ public class ParsePodcastTask extends Task<Podcast> {
     private String parseItunesLink() throws IOException, JSONException {
         // Get the itunes podcast ID from the link
         Pattern pattern = Pattern.compile(".*/id([0-9]+).*");
-        Matcher matcher = pattern.matcher(this.url);
+        Matcher matcher = pattern.matcher(url);
         matcher.matches();
         String id = matcher.group(1);
 
         // Open connection to API
-        URL url = new URL(ITUNES_API + id);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        URL itunesUrl = new URL(ITUNES_API + id);
+        HttpURLConnection conn = (HttpURLConnection) itunesUrl.openConnection();
         BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
         // Read each byte until no more data in stream

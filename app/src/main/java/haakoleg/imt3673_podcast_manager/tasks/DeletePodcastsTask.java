@@ -16,7 +16,7 @@ import haakoleg.imt3673_podcast_manager.models.Podcast;
 
 public class DeletePodcastsTask extends Task<Void> {
     private final Context context;
-    private List<Podcast> podcasts;
+    private final List<Podcast> podcasts;
     private final boolean deleteFromFirebase;
 
     public DeletePodcastsTask(Context context, List<Podcast> podcasts, boolean deleteFromFirebase, OnSuccessListener<Void> successListener, OnErrorListener errorListener) {

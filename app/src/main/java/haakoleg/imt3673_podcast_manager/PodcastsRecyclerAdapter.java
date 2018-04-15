@@ -18,10 +18,11 @@ import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOption
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import haakoleg.imt3673_podcast_manager.models.Podcast;
 
-public class PodcastsRecyclerAdapter extends RecyclerView.Adapter<PodcastsRecyclerAdapter.ViewHolder> {
+public class PodcastsRecyclerAdapter extends RecyclerView.Adapter<PodcastsRecyclerAdapter.PodcastHolder> {
     private final Fragment fragment;
     private List<PodcastObject> podcasts;
     private final OnPodcastClickListener listener;
@@ -59,14 +60,14 @@ public class PodcastsRecyclerAdapter extends RecyclerView.Adapter<PodcastsRecycl
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public PodcastHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.view_podcast_item, parent, false);
-        return new ViewHolder(itemView);
+        return new PodcastHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull PodcastHolder holder, int position) {
         PodcastObject obj = podcasts.get(position);
 
         Glide.with(fragment)
@@ -78,7 +79,7 @@ public class PodcastsRecyclerAdapter extends RecyclerView.Adapter<PodcastsRecycl
         holder.podcastTitleTxt.setText(obj.podcast.getTitle());
         holder.podcastCategoryTxt.setText(obj.podcast.getCategory());
         holder.podcastRating.setRating((float) obj.rating);
-        holder.podcastSubscribersTxt.setText(Integer.toString(obj.subscribers));
+        holder.podcastSubscribersTxt.setText(String.format(Locale.getDefault(), "%d", obj.subscribers));
     }
 
     @Override
@@ -89,14 +90,14 @@ public class PodcastsRecyclerAdapter extends RecyclerView.Adapter<PodcastsRecycl
         return podcasts.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class PodcastHolder extends RecyclerView.ViewHolder {
         final ImageView podcastImg;
         final TextView podcastTitleTxt;
         final TextView podcastCategoryTxt;
         final RatingBar podcastRating;
         final TextView podcastSubscribersTxt;
 
-        public ViewHolder(View itemView) {
+        PodcastHolder(View itemView) {
             super(itemView);
             podcastImg = itemView.findViewById(R.id.podcast_img);
             podcastTitleTxt = itemView.findViewById(R.id.podcast_title_txt);
@@ -107,17 +108,17 @@ public class PodcastsRecyclerAdapter extends RecyclerView.Adapter<PodcastsRecycl
             // Set click listener for item
             itemView.setOnClickListener(v -> {
                 PodcastObject obj = podcasts.get(getAdapterPosition());
-                listener.onPodcastClicked(obj.podcast, obj.subscribers);
+                listener.onPodcastClicked(obj.podcast);
             });
         }
     }
 
     private class PodcastObject {
-        private Podcast podcast;
-        private int subscribers;
-        private int rating;
+        final private Podcast podcast;
+        final private int subscribers;
+        final private int rating;
 
-        public PodcastObject(Podcast podcast, int subscribers, int rating) {
+        PodcastObject(Podcast podcast, int subscribers, int rating) {
             this.podcast = podcast;
             this.subscribers = subscribers;
             this.rating = rating;
@@ -125,6 +126,6 @@ public class PodcastsRecyclerAdapter extends RecyclerView.Adapter<PodcastsRecycl
     }
 
     public interface OnPodcastClickListener {
-        void onPodcastClicked(Podcast podcast, int subscribers);
+        void onPodcastClicked(Podcast podcast);
     }
 }

@@ -39,8 +39,8 @@ import java.util.List;
 
 public class EpisodePlaybackService extends MediaBrowserServiceCompat {
     public static final int STATE_PREPARED = 123;
-    private static final String notificationChannel = "PodcastManagerChannel";
-    private static final String notificationId = "1234";
+    private static final String NOTIFICATION_CHANNEL = "PodcastManagerChannel";
+    private static final String NOTIFICATION_ID = "1234";
     private static final int UPDATER_INTERVAL = 1000;
 
     // Media items for playback is stored in this static field
@@ -94,23 +94,27 @@ public class EpisodePlaybackService extends MediaBrowserServiceCompat {
         // Set wake locks so the mediaplayer will not stop playback when device is sleeping
         mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
         WifiManager wm = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL, "EpisodePlaybackLock");
-        wifiLock.acquire();
+        if (wm != null) {
+            wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL, "EpisodePlaybackLock");
+            wifiLock.acquire();
+        }
 
         // If Android Oreo, needs a notification channel
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
-                    notificationId,
-                    notificationChannel,
+                    NOTIFICATION_ID,
+                    NOTIFICATION_CHANNEL,
                     NotificationManager.IMPORTANCE_LOW);
             NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            nManager.createNotificationChannel(channel);
+            if (nManager != null) {
+                nManager.createNotificationChannel(channel);
+            }
         }
 
         // Create notification for display of audio playback
-        notificationBuilder = new NotificationCompat.Builder(this, notificationChannel);
+        notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL);
         notificationBuilder
-                .setChannelId(notificationId)
+                .setChannelId(NOTIFICATION_ID)
                 .setDeleteIntent(MediaButtonReceiver.buildMediaButtonPendingIntent(
                         this, PlaybackStateCompat.ACTION_STOP))
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -136,42 +140,6 @@ public class EpisodePlaybackService extends MediaBrowserServiceCompat {
     private void setPlayBackState(int state) {
         playbackStateBuilder.setState(state, mediaPlayer.getCurrentPosition(), 1.f);
         mediaSession.setPlaybackState(playbackStateBuilder.build());
-    }
-
-    /**
-     * Starts position updater which notifies listeners about audio position changes
-     * every second.
-     */
-    private void startPositionUpdater() {
-        Handler handler = new Handler();
-        shouldUpdatePosition = true;
-
-        Runnable updater = new Runnable() {
-            @Override
-            public void run() {
-                if (shouldUpdatePosition) {
-                    setPlayBackState(mediaSession.getController().getPlaybackState().getState());
-                    handler.postDelayed(this, UPDATER_INTERVAL);
-                }
-            }
-        };
-        updater.run();
-    }
-
-    /**
-     * Displays the audio notification which displays the currently playing podcast episode
-     * and brings the service to the foreground
-     */
-    private void displayNotification() {
-        // Get the session metdata
-        MediaControllerCompat controller = mediaSession.getController();
-        MediaDescriptionCompat description = items.get(0).getDescription();
-
-        notificationBuilder
-                .setContentTitle(description.getTitle())
-                .setContentText(description.getDescription())
-                .setContentIntent(controller.getSessionActivity());
-        startForeground(1, notificationBuilder.build());
     }
 
     /**
@@ -205,6 +173,43 @@ public class EpisodePlaybackService extends MediaBrowserServiceCompat {
      */
     private class MediaAdapter extends MediaSessionCompat.Callback implements
             MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnInfoListener, MediaPlayer.OnCompletionListener {
+
+        /**
+         * Starts position updater which notifies listeners about audio position changes
+         * every second.
+         */
+        private void startPositionUpdater() {
+            Handler handler = new Handler();
+            shouldUpdatePosition = true;
+
+            Runnable updater = new Runnable() {
+                @Override
+                public void run() {
+                    if (shouldUpdatePosition) {
+                        setPlayBackState(mediaSession.getController().getPlaybackState().getState());
+                        handler.postDelayed(this, UPDATER_INTERVAL);
+                    }
+                }
+            };
+            updater.run();
+        }
+
+        /**
+         * Displays the audio notification which displays the currently playing podcast episode
+         * and brings the service to the foreground
+         */
+        private void displayNotification() {
+            // Get the session metdata
+            MediaControllerCompat controller = mediaSession.getController();
+            MediaDescriptionCompat description = items.get(0).getDescription();
+
+            notificationBuilder
+                    .setContentTitle(description.getTitle())
+                    .setContentText(description.getDescription())
+                    .setContentIntent(controller.getSessionActivity());
+            startForeground(1, notificationBuilder.build());
+        }
+
         @Override
         public void onPrepare() {
             stopForeground(true);
@@ -308,7 +313,7 @@ public class EpisodePlaybackService extends MediaBrowserServiceCompat {
 
         @Override
         public boolean onError(MediaPlayer mp, int what, int extra) {
-            // TODO: Handle errors
+            Log.e(getClass().getName(), "MediaPlayer error: " + Integer.toString(what));
             return false;
         }
 
@@ -321,8 +326,9 @@ public class EpisodePlaybackService extends MediaBrowserServiceCompat {
                 case MediaPlayer.MEDIA_INFO_BUFFERING_END:
                     setPlayBackState(PlaybackStateCompat.STATE_PLAYING);
                     return true;
+                default:
+                    return false;
             }
-            return false;
         }
 
         @Override

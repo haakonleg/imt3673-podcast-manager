@@ -14,19 +14,19 @@ import haakoleg.imt3673_podcast_manager.utils.Messages;
  * @param <T> The type of resultObject which is passed to the UI thread when the task is finished
  */
 public abstract class Task<T> implements Runnable {
-    public static final int SUCCESSFUL = 0;
-    public static final int ERROR_NO_INTERNET = 1;
-    public static final int ERROR_DOWNLOAD = 2;
-    public static final int ERROR_PARSE = 3;
-    public static final int ERROR_SQLITE = 4;
+    static final int SUCCESSFUL = 0;
+    static final int ERROR_NO_INTERNET = 1;
+    static final int ERROR_DOWNLOAD = 2;
+    static final int ERROR_PARSE = 3;
+    static final int ERROR_SQLITE = 4;
 
     private final Handler mainHandler;
     private final OnSuccessListener<T> successListener;
     private final OnErrorListener errorListener;
 
-    protected T resultObject;
+    T resultObject;
 
-    protected Task(OnSuccessListener<T> successListener, OnErrorListener errorListener) {
+    Task(OnSuccessListener<T> successListener, OnErrorListener errorListener) {
         // Get handler for UI thread
         mainHandler = new Handler(Looper.getMainLooper());
         this.successListener = successListener;
@@ -46,6 +46,9 @@ public abstract class Task<T> implements Runnable {
                 break;
             case ERROR_SQLITE:
                 Messages.showError(context, context.getString(R.string.error_sqlite), null);
+                break;
+            default:
+                Messages.showError(context, context.getString(R.string.error_unknown), null);
                 break;
         }
     }

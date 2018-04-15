@@ -1,9 +1,7 @@
 package haakoleg.imt3673_podcast_manager;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Class used for managing a pool of threads, contains method execute() which
@@ -12,7 +10,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class ThreadManager {
     private static ThreadManager singleInstance;
 
-    private final BlockingQueue<Runnable> taskQueue;
     private final ExecutorService poolExecutor;
 
     public static ThreadManager get() {
@@ -26,7 +23,6 @@ public class ThreadManager {
      * Private constructor which instantiates the parameters and thread pool
      */
     private ThreadManager() {
-        taskQueue = new LinkedBlockingQueue<>();
         poolExecutor = Executors.newCachedThreadPool();
     }
 

@@ -15,10 +15,10 @@ import java.util.List;
 import haakoleg.imt3673_podcast_manager.models.Podcast;
 import haakoleg.imt3673_podcast_manager.utils.Messages;
 
-public class ManagePodcastsRecyclerAdapter extends RecyclerView.Adapter<ManagePodcastsRecyclerAdapter.ViewHolder> {
-    private Context context;
-    private List<Podcast> podcasts;
-    private ManagePodcastsListener listener;
+public class ManagePodcastsRecyclerAdapter extends RecyclerView.Adapter<ManagePodcastsRecyclerAdapter.PodcastHolder> {
+    private final Context context;
+    private final List<Podcast> podcasts;
+    private final ManagePodcastsListener listener;
 
     public ManagePodcastsRecyclerAdapter(Context context, List<Podcast> podcasts, ManagePodcastsListener listener) {
         this.context = context;
@@ -28,14 +28,14 @@ public class ManagePodcastsRecyclerAdapter extends RecyclerView.Adapter<ManagePo
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public PodcastHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.view_podcast_manage_item, parent, false);
-        return new ViewHolder(view);
+        return new PodcastHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull PodcastHolder holder, int position) {
         Podcast podcast = podcasts.get(position);
         holder.podcastTitle.setText(podcast.getTitle());
     }
@@ -54,12 +54,12 @@ public class ManagePodcastsRecyclerAdapter extends RecyclerView.Adapter<ManagePo
         });
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
-        TextView podcastTitle;
-        ImageView removeBtn;
+    class PodcastHolder extends RecyclerView.ViewHolder {
+        final TextView podcastTitle;
+        final ImageView removeBtn;
 
         @SuppressLint("ClickableViewAccessibility")
-        ViewHolder(View itemView) {
+        PodcastHolder(View itemView) {
             super(itemView);
             podcastTitle = itemView.findViewById(R.id.podcast_title_txt);
             removeBtn = itemView.findViewById(R.id.manage_remove_btn);

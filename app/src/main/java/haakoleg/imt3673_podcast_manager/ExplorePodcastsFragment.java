@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.Fade;
 import android.transition.TransitionManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -113,10 +114,12 @@ public class ExplorePodcastsFragment extends Fragment implements
     }
 
     @Override
-    public void onCancelled(DatabaseError databaseError) { }
+    public void onCancelled(DatabaseError databaseError) {
+        // Unused
+    }
 
     @Override
-    public void onPodcastClicked(Podcast podcast, int subscribers) {
+    public void onPodcastClicked(Podcast podcast) {
         DisplayPodcastFragment fragment = DisplayPodcastFragment.newInstance(podcast);
         ((MainActivity)getActivity()).displayContent(fragment, "DisplayPodcast");
     }
@@ -124,14 +127,14 @@ public class ExplorePodcastsFragment extends Fragment implements
     /**
      * When the user selects "popular" or "top rated" tab, call adapter method
      * to sort by popularity or rating
-     * @param tab
+     * @param tab The tab which was selected
      */
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
         int pos = tab.getPosition();
 
         podcastsRecycler.scrollToPosition(0);
-        TransitionManager.beginDelayedTransition(podcastsRecycler);
+        TransitionManager.beginDelayedTransition(podcastsRecycler, new Fade());
         if (pos == 0) {
             adapter.sortByPopularity();
         } else {
@@ -141,11 +144,11 @@ public class ExplorePodcastsFragment extends Fragment implements
 
     @Override
     public void onTabUnselected(TabLayout.Tab tab) {
-
+        // Unused
     }
 
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
-
+        // Unused
     }
 }
