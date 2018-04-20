@@ -1,7 +1,7 @@
 package haakoleg.imt3673_podcast_manager;
 
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -203,14 +203,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     new RequestOptions().centerCrop()).into(new SimpleTarget<Drawable>(50, 50) {
                 @Override
                 public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                    resource.setTintMode(PorterDuff.Mode.DST);
                     item.setIcon(resource);
                 }
             });
-
-            // The icon won't show unless this is set on Android oreo for some reason
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                item.setIconTintMode(null);
-            }
         }
     }
 
