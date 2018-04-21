@@ -11,7 +11,8 @@ import com.google.firebase.database.Exclude;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+import haakoleg.imt3673_podcast_manager.utils.Hash;
 
 @Entity
 public class Podcast implements Parcelable {
@@ -147,7 +148,7 @@ public class Podcast implements Parcelable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.url);
+        return Hash.getHash(url);
     }
 
     @Override

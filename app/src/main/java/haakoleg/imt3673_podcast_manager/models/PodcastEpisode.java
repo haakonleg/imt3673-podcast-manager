@@ -6,10 +6,10 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import java.io.File;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import haakoleg.imt3673_podcast_manager.MainActivity;
+import haakoleg.imt3673_podcast_manager.utils.Hash;
 
 @Entity(primaryKeys = {"parentUrl", "audioUrl"})
 public class PodcastEpisode implements Parcelable {
@@ -137,7 +137,7 @@ public class PodcastEpisode implements Parcelable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(parentUrl, audioUrl);
+        return Hash.getHash(parentUrl, audioUrl);
     }
 
     @Override
