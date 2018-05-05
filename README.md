@@ -11,6 +11,7 @@ Håkon Legernæs
 * Download podcast episodes to the local storage and listen offline
 * Explore the most popular and top rated podcasts which other users of the app have added, and add them to your own list
 
+YouTube demo: https://youtu.be/xsvCOeZHhis
 Link to Trello board: https://trello.com/b/sAWoGFWo/imt3673-podcast-manager
 
 ## Report
