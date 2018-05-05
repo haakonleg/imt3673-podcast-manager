@@ -1,5 +1,11 @@
 package haakoleg.imt3673_podcast_manager.models;
 
+/**
+ * Data model for a user
+ */
+
+// Suppress unused warnings because setter and getter methods are needed by Firebase
+@SuppressWarnings("unused")
 public class User {
     private String username;
     private String email;

@@ -23,6 +23,7 @@
                 android:id="@+id/episode_img"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
+                android:contentDescription="@string/podcast_image"
                 app:srcCompat="@color/black" />
 
             <TextView
@@ -54,6 +55,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 android:background="?android:attr/selectableItemBackground"
                 android:padding="5dp"
+                android:contentDescription="@string/download_episode"
                 card_view:srcCompat="@drawable/ic_file_download_24dp" />
 
             <TextView

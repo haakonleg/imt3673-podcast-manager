@@ -135,6 +135,9 @@ public class EpisodesRecyclerAdapter extends RecyclerView.Adapter<EpisodesRecycl
         }
     }
 
+    /**
+     * Callback interface for when a podcast episode is clicked
+     */
     public interface OnEpisodeClickListener {
         void onEpisodeClicked(PodcastEpisode episode, Podcast podcast);
         void onDownloadEpisodeClicked(PodcastEpisode episode);

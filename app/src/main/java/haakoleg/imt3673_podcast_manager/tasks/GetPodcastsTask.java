@@ -9,6 +9,10 @@ import java.util.List;
 import haakoleg.imt3673_podcast_manager.database.AppDatabase;
 import haakoleg.imt3673_podcast_manager.models.Podcast;
 
+/**
+ * Task which is passed to ThreadManager which returns all the users saved podcasts
+ */
+
 public class GetPodcastsTask extends Task<List<Podcast>> {
     private final Context context;
 

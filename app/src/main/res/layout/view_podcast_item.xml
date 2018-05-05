@@ -22,6 +22,7 @@
             android:id="@+id/podcast_img"
             android:layout_width="match_parent"
             android:layout_height="100dp"
+            android:contentDescription="@string/podcast_image"
             card_view:srcCompat="@color/black" />
 
         <TextView

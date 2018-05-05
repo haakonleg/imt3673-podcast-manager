@@ -12,6 +12,10 @@ import java.util.List;
 
 import haakoleg.imt3673_podcast_manager.models.Comment;
 
+/**
+ * Adapter for the RecyclerView for displaying user comments
+ */
+
 public class CommentsRecyclerAdapter extends RecyclerView.Adapter<CommentsRecyclerAdapter.CommentHolder> {
     private final List<Comment> comments;
 
@@ -46,6 +50,9 @@ public class CommentsRecyclerAdapter extends RecyclerView.Adapter<CommentsRecycl
         return comments.size();
     }
 
+    /**
+     * ViewHolder for a user comment
+     */
     class CommentHolder extends RecyclerView.ViewHolder {
         final TextView usernameTxt;
         final RatingBar rating;

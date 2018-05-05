@@ -44,6 +44,12 @@ import haakoleg.imt3673_podcast_manager.tasks.SyncPodcastTask;
 import haakoleg.imt3673_podcast_manager.tasks.Task;
 import haakoleg.imt3673_podcast_manager.utils.CheckNetwork;
 
+/**
+ * This is the main activity which contains a drawer menu with all of the navigation paths for
+ * the app, and a container in the middle of the screen which is replaced with fragments when
+ * the user selects something from the menu.
+ */
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static final File DOWNLOAD_DIR = new File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "/podcastmanager/");
@@ -117,6 +123,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ThreadManager.get().execute(task);
     }
 
+    /**
+     * Syncs all podcasts with the local SQLite database if there are podcasts in Firebase
+     * that are not already stored in the SQLite database. This is used for syncing the users
+     * saved podcasts across devices.
+     * @param localUrls List of the podcast URLs that are stored locally, used for comparing
+     */
     private void syncWithFirebase(List<String> localUrls) {
         // Check if there are podcast urls from firebase for the user that has not been added to the local database
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -166,6 +178,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    /**
+     * Launches the SyncPodcastTask for a single podcast
+     * @param podcast The podcast to sync
+     */
     private void syncPodcast(Podcast podcast) {
         SyncPodcastTask task = new SyncPodcastTask(this, podcast,
                 updatedEpisodes -> Log.d("Synced", podcast.getUrl()),
@@ -173,6 +189,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ThreadManager.get().execute(task);
     }
 
+    /**
+     * Shows a "home fragment", which is an instance of ShowEpisodesFragment initialized
+     * with all the users podcasts, so that new episodes are displayed from the whole list.
+     */
     private void showHomeFragment() {
         // Show home fragment containing recent episodes from all podcasts
         ShowEpisodesFragment fragment = ShowEpisodesFragment.newInstance(new ArrayList<>(this.podcasts.values()));

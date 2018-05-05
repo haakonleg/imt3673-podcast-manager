@@ -27,6 +27,10 @@ import java.util.ArrayList;
 import haakoleg.imt3673_podcast_manager.models.Comment;
 import haakoleg.imt3673_podcast_manager.models.Podcast;
 
+/**
+ * Fragment which displays information about a podcast. Used when the user selects
+ * a podcast from the "Explore Podcasts" fragment
+ */
 public class DisplayPodcastFragment extends Fragment implements ChildEventListener {
     private Podcast podcast;
     private CommentsRecyclerAdapter adapter;
@@ -35,6 +39,11 @@ public class DisplayPodcastFragment extends Fragment implements ChildEventListen
     private FloatingActionButton commentFab;
     private RecyclerView commentsRecycler;
 
+    /**
+     * Create a new instance of the fragment
+     * @param podcast The podcast to display
+     * @return New Fragment instance
+     */
     public static DisplayPodcastFragment newInstance(Podcast podcast) {
         DisplayPodcastFragment fragment = new DisplayPodcastFragment();
         Bundle bundle = new Bundle();
@@ -83,11 +92,13 @@ public class DisplayPodcastFragment extends Fragment implements ChildEventListen
     public void onStart() {
         super.onStart();
 
+        //  Set click listener for post comment FAB
         commentFab.setOnClickListener(v -> {
             PostCommentDialogFragment dialog = PostCommentDialogFragment.newInstance(Integer.toHexString(podcast.hashCode()));
             dialog.show(getActivity().getSupportFragmentManager(), "PostCommentDialog");
         });
 
+        // Set click listener for add podcast FAB
         addFab.setOnClickListener(v -> {
             ((MainActivity)getActivity()).addPodcast(podcast.getUrl());
             Toast.makeText(getActivity(), "Subscribed to " + podcast.getTitle(), Toast.LENGTH_SHORT).show();
@@ -108,6 +119,7 @@ public class DisplayPodcastFragment extends Fragment implements ChildEventListen
     public void onResume() {
         super.onResume();
 
+        // Set title for actionbar and set back button, lock drawer
         MainActivity mainActivity = (MainActivity) getActivity();
         mainActivity.getSupportActionBar().setTitle(podcast.getTitle());
         mainActivity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_24dp);

@@ -21,6 +21,13 @@ import haakoleg.imt3673_podcast_manager.database.AppDatabase;
 import haakoleg.imt3673_podcast_manager.models.Podcast;
 import haakoleg.imt3673_podcast_manager.models.PodcastEpisode;
 
+/**
+ * Task which is passed to ThreadManager, which is responsible for syncing a podcast.
+ * Syncing means that the feed XML is downloaded and parsed, and the task then checks if
+ * there are any new episodes which are not stored in the SQLite database. If the podcast
+ * does not exist at all in the database, it is added.
+ */
+
 public class SyncPodcastTask extends Task<List<PodcastEpisode>> {
     private final Context context;
     private final Podcast podcast;

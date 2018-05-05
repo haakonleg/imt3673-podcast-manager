@@ -5,6 +5,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.view.MenuItem;
 
+/**
+ * Fragment which is displayed when the user chooses "Settings" from the drawer menu
+ */
+
 public class SettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {

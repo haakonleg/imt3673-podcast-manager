@@ -54,6 +54,12 @@ public class ShowEpisodesFragment extends Fragment
         return fragment;
     }
 
+    /**
+     * Static factory method which creates an instance of ShowEpisodesFragment, but ONLY
+     * containing podcast episodes that the user has downloaded
+     * @param podcasts List of podcasts to display downloaded episodes from
+     * @return New Fragment instance
+     */
     public static ShowEpisodesFragment newInstanceDownloaded(ArrayList<Podcast> podcasts) {
         ShowEpisodesFragment fragment = new ShowEpisodesFragment();
         Bundle bundle = new Bundle();

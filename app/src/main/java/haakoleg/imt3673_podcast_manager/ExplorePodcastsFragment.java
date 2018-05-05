@@ -26,6 +26,11 @@ import java.util.ArrayList;
 
 import haakoleg.imt3673_podcast_manager.models.Podcast;
 
+/**
+ * This fragment is used when the "Explore Podcasts" option is selected in the drawer menu.
+ * Contains podcasts added by other users of the app.
+ */
+
 public class ExplorePodcastsFragment extends Fragment implements
         ValueEventListener, PodcastsRecyclerAdapter.OnPodcastClickListener, TabLayout.OnTabSelectedListener {
 
@@ -58,7 +63,10 @@ public class ExplorePodcastsFragment extends Fragment implements
     @Override
     public void onStart() {
         super.onStart();
+
+        // Add firebase listener to fetch podcasts
         dbRef.addListenerForSingleValueEvent(this);
+        // Add tablayout listener
         tabLayout.addOnTabSelectedListener(this);
     }
 
@@ -66,6 +74,7 @@ public class ExplorePodcastsFragment extends Fragment implements
     public void onResume() {
         super.onResume();
 
+        // Set title for actionbar and set home button, unlock drawer
         MainActivity mainActivity = (MainActivity) getActivity();
         mainActivity.getSupportActionBar().setTitle(R.string.explore_podcasts_actionbar_title);
         mainActivity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_24dp);
@@ -81,6 +90,10 @@ public class ExplorePodcastsFragment extends Fragment implements
         return false;
     }
 
+    /**
+     * Override for firebase ValueEventListener. Fetches podcasts from Firebase and adds
+     * them to the PodcasatsRecyclerAdapter to display them in a RecyclerView.
+     */
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
         ArrayList<Podcast> podcasts = new ArrayList<>((int)dataSnapshot.getChildrenCount());

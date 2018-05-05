@@ -9,11 +9,19 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.EditText;
 
+/**
+ * Dialog fragment which is displayed when the user chooses "Add Podcast" from the drawer menu
+ */
+
 public class AddPodcastDialogFragment extends DialogFragment {
     private PodcastAddedListener listener;
     private View view;
     private EditText urlInput;
 
+    /**
+     * Set callback for when a podcast is added by user
+     * @param listener Instance of PodcastAddedListener
+     */
     public void setListener(PodcastAddedListener listener) {
         this.listener = listener;
     }
@@ -34,6 +42,7 @@ public class AddPodcastDialogFragment extends DialogFragment {
         builder.setPositiveButton(getString(R.string.dialog_add), (dialog, which) -> {
             String url = urlInput.getText().toString();
             if (!url.isEmpty()) {
+                // Notify listeners
                 listener.onPodcastAdded(url);
             }
         });

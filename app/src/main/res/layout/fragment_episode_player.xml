@@ -11,6 +11,7 @@
         android:layout_height="match_parent"
         android:layout_margin="10dp"
         android:layout_above="@id/player_seekbar"
+        android:contentDescription="@string/podcast_image"
         app:srcCompat="@color/black" />
 
     <ProgressBar

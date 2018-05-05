@@ -15,6 +15,11 @@ import java.util.List;
 import haakoleg.imt3673_podcast_manager.models.Podcast;
 import haakoleg.imt3673_podcast_manager.utils.Messages;
 
+/**
+ * Adapter for the RecyclerView used in ManagePodcastsFragment. Displays the users podcasts
+ * along with a delete button so that the user can delete podcasts from the list.
+ */
+
 public class ManagePodcastsRecyclerAdapter extends RecyclerView.Adapter<ManagePodcastsRecyclerAdapter.PodcastHolder> {
     private final Context context;
     private final List<Podcast> podcasts;

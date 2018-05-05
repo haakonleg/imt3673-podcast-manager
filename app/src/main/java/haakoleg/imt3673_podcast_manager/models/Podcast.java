@@ -14,6 +14,10 @@ import java.util.List;
 
 import haakoleg.imt3673_podcast_manager.utils.Hash;
 
+/**
+ * Data model for a podcast
+ */
+
 @Entity
 public class Podcast implements Parcelable {
     // The URL to the feed itself
@@ -64,7 +68,9 @@ public class Podcast implements Parcelable {
         this.title = title;
     }
 
+    @SuppressWarnings("unused")
     public String getLink() {
+        // Required by Firebase DataSnapshot.getValue()
         return link;
     }
 
@@ -96,7 +102,9 @@ public class Podcast implements Parcelable {
         this.image = image;
     }
 
+    @SuppressWarnings("unused")
     public long getUpdated() {
+        // Required by Firebase DataSnapshot.getValue()
         return updated;
     }
 

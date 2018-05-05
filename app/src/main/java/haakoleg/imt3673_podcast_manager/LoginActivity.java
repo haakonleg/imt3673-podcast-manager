@@ -23,6 +23,12 @@ import haakoleg.imt3673_podcast_manager.models.User;
 import haakoleg.imt3673_podcast_manager.utils.CheckNetwork;
 import haakoleg.imt3673_podcast_manager.utils.Messages;
 
+/**
+ * This activity displays the login screen and is the default activity for the app. However
+ * it is only visible to the user if not already logged in, as it checks in onCreate whether
+ * the user is logged in or not.
+ */
+
 public class LoginActivity extends AppCompatActivity {
     private static boolean runOnce;
 

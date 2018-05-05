@@ -27,6 +27,12 @@ abstract class Parser {
     // Must be overridden, this will parse the podcast
     public abstract void parse (Podcast podcast) throws XmlPullParserException, IOException;
 
+    /**
+     * Parses a string encoded date from the XML tag
+     * @param parser The xmlpullparser object
+     * @param sdf A SimpleDateFormat object which is used for parsing the date
+     * @return Parsed date in unix time
+     */
     long readDate(XmlPullParser parser, SimpleDateFormat sdf) throws IOException, XmlPullParserException {
         String toFormat = readText(parser);
         try {
@@ -38,6 +44,12 @@ abstract class Parser {
         }
     }
 
+    /**
+     * Reads an attribute value from an XML tag
+     * @param parser The xmlpullparser object
+     * @param name Name of the attribute
+     * @return The text value of the attribute
+     */
     String readAttributeValue(XmlPullParser parser, String name) throws IOException, XmlPullParserException {
         String result = parser.getAttributeValue(null, name);
         if (result != null) {

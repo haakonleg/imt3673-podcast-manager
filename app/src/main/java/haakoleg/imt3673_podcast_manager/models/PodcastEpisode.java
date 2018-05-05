@@ -11,6 +11,10 @@ import java.util.concurrent.TimeUnit;
 import haakoleg.imt3673_podcast_manager.MainActivity;
 import haakoleg.imt3673_podcast_manager.utils.Hash;
 
+/**
+ * Data model for a podcast episode
+ */
+
 @Entity(primaryKeys = {"parentUrl", "audioUrl"})
 public class PodcastEpisode implements Parcelable {
     @NonNull
@@ -42,7 +46,9 @@ public class PodcastEpisode implements Parcelable {
         this.description = description;
     }
 
+    @SuppressWarnings("unused")
     public String getLink() {
+        // Required by Firebase DataSnapshot.getValue()
         return link;
     }
 
@@ -58,7 +64,9 @@ public class PodcastEpisode implements Parcelable {
         this.audioUrl = audioUrl;
     }
 
+    @SuppressWarnings("unused")
     public int getDuration() {
+        // Required by Firebase DataSnapshot.getValue()
         return duration;
     }
 

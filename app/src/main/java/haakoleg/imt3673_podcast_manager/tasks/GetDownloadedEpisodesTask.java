@@ -10,6 +10,11 @@ import java.util.List;
 import haakoleg.imt3673_podcast_manager.database.AppDatabase;
 import haakoleg.imt3673_podcast_manager.models.PodcastEpisode;
 
+/**
+ * Task which is passed to ThreadManager which returns all podcast episodes the user
+ * has downloaded to local storage
+ */
+
 public class GetDownloadedEpisodesTask extends Task<List<PodcastEpisode>> {
     private final Context context;
 

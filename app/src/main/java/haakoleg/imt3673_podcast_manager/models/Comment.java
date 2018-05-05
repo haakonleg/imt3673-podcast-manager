@@ -1,5 +1,9 @@
 package haakoleg.imt3673_podcast_manager.models;
 
+/**
+ * Data model for a user comment
+ */
+
 public class Comment {
     private String username;
     private String comment;

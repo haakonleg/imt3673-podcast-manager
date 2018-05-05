@@ -22,6 +22,10 @@ import java.util.Locale;
 
 import haakoleg.imt3673_podcast_manager.models.Podcast;
 
+/**
+ *
+ */
+
 public class PodcastsRecyclerAdapter extends RecyclerView.Adapter<PodcastsRecyclerAdapter.PodcastHolder> {
     private final Fragment fragment;
     private List<PodcastObject> podcasts;
@@ -48,11 +52,17 @@ public class PodcastsRecyclerAdapter extends RecyclerView.Adapter<PodcastsRecycl
         notifyDataSetChanged();
     }
 
+    /**
+     * Sorts podcasts in the list by popularity, by using a comparator
+     */
     public void sortByPopularity() {
         Collections.sort(this.podcasts, (o1, o2) -> o2.subscribers - o1.subscribers);
         notifyDataSetChanged();
     }
 
+    /**
+     * Sorts podcasts in the list by rating, by using a comparator
+     */
     public void sortByRating() {
         Collections.sort(this.podcasts, (o1, o2) -> o2.rating - o1.rating);
         notifyDataSetChanged();
@@ -90,6 +100,9 @@ public class PodcastsRecyclerAdapter extends RecyclerView.Adapter<PodcastsRecycl
         return podcasts.size();
     }
 
+    /**
+     * ViewHolder for a podcast in the list
+     */
     class PodcastHolder extends RecyclerView.ViewHolder {
         final ImageView podcastImg;
         final TextView podcastTitleTxt;

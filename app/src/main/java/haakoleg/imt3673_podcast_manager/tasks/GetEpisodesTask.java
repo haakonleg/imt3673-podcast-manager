@@ -13,6 +13,11 @@ import haakoleg.imt3673_podcast_manager.database.AppDatabase;
 import haakoleg.imt3673_podcast_manager.models.Podcast;
 import haakoleg.imt3673_podcast_manager.models.PodcastEpisode;
 
+/**
+ * Task which is passed to ThreadManager which returns all podcast episodes from one or more
+ * podcasts
+ */
+
 public class GetEpisodesTask extends Task<List<PodcastEpisode>> {
     private final Context context;
     private final List<Podcast> podcasts;

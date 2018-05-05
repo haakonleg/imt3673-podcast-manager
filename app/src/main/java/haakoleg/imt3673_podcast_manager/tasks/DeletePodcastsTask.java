@@ -14,6 +14,11 @@ import java.util.List;
 import haakoleg.imt3673_podcast_manager.database.AppDatabase;
 import haakoleg.imt3673_podcast_manager.models.Podcast;
 
+/**
+ * Task passed to ThreadManager which deletes a podcast from the local SQLite database
+ * and from the users saved podcasts list on Firebase
+ */
+
 public class DeletePodcastsTask extends Task<Void> {
     private final Context context;
     private final List<Podcast> podcasts;

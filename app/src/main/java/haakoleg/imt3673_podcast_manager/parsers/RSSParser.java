@@ -10,6 +10,10 @@ import java.util.Locale;
 import haakoleg.imt3673_podcast_manager.models.Podcast;
 import haakoleg.imt3673_podcast_manager.models.PodcastEpisode;
 
+/**
+ * Parses an RSS podcast feed
+ */
+
 public class RSSParser extends Parser {
     private final SimpleDateFormat sdf;
 
@@ -86,6 +90,11 @@ public class RSSParser extends Parser {
 
     }
 
+    /**
+     * Parses a podcast episode, "item" tag in XML
+     * @param parser The xmlpullparser object
+     * @return The parsed podcast episode, as PodcastEpisode object
+     */
     private PodcastEpisode readEpisode(XmlPullParser parser) throws XmlPullParserException, IOException {
         PodcastEpisode episode = new PodcastEpisode();
 
@@ -153,6 +162,11 @@ public class RSSParser extends Parser {
         return seconds;
     }
 
+    /**
+     * Reads an "image" tag in the RSS format
+     * @param parser The xmlpullparser object
+     * @return Link to the image
+     */
     private String readImage(XmlPullParser parser) throws XmlPullParserException, IOException {
         String result = "";
 

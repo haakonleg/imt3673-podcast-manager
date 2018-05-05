@@ -9,9 +9,18 @@ import java.io.StringReader;
 
 import haakoleg.imt3673_podcast_manager.models.Podcast;
 
+/**
+ * This class parses a podcast feed (XML, ATOM), ATOM is not implemented yet because
+ * I was not able to find a single podcast using this format, but the class is set up so
+ * that it can be easily implemented.
+ */
+
 public class PodcastParser {
     private XmlPullParser parser;
 
+    /**
+     * Constructor that initializes the XmlPullParser object
+     */
     public PodcastParser() throws XmlPullParserException {
         XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
         factory.setNamespaceAware(false);

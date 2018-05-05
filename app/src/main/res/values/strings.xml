@@ -53,4 +53,7 @@
     <string name="error_sqlite">There was an error with SQLite</string>
     <string name="error_unknown">Unknown error</string>
     <string name="duration_start">00:00/00:00</string>
+    <string name="podcast_image">Podcast image</string>
+    <string name="download_episode">Download this episode</string>
+    <string name="delete_podcast">Delete this podcast</string>
 </resources>

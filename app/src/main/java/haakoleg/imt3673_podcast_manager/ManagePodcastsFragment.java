@@ -19,6 +19,10 @@ import haakoleg.imt3673_podcast_manager.models.Podcast;
 import haakoleg.imt3673_podcast_manager.tasks.DeletePodcastsTask;
 import haakoleg.imt3673_podcast_manager.tasks.Task;
 
+/**
+ * Adapter for
+ */
+
 public class ManagePodcastsFragment extends Fragment implements ManagePodcastsRecyclerAdapter.ManagePodcastsListener {
     private List<Podcast> podcasts;
     private RecyclerView manageRecycler;

@@ -18,6 +18,10 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import haakoleg.imt3673_podcast_manager.models.Comment;
 
+/**
+ * Dialog fragment which is displayed when the user posts a comment on a podcast page
+ */
+
 public class PostCommentDialogFragment extends DialogFragment {
     private View view;
     private EditText commentInput;
@@ -70,6 +74,11 @@ public class PostCommentDialogFragment extends DialogFragment {
         return builder.create();
     }
 
+    /**
+     * Posts a comment.
+     * @param comment The text contents of the comment
+     * @param rating Selected rating, which is an integer between 1-5
+     */
     private void postComment(String comment, int rating) {
         if (comment.length() < 3) {
             Toast.makeText(getActivity(),  "Comment must be 3 characters or longer", Toast.LENGTH_SHORT).show();

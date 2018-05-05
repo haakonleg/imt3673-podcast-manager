@@ -21,5 +21,6 @@
         android:layout_height="30dp"
         android:layout_alignParentEnd="true"
         android:scaleType="center"
+        android:contentDescription="@string/delete_podcast"
         app:srcCompat="@drawable/ic_remove_circle_24dp" />
 </RelativeLayout>
