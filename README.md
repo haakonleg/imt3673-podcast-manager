@@ -32,8 +32,9 @@ When developing the app I used a Trello board, with three sections: "Backlog", "
 ### Future Improvement
 There are some issues that are currenttly missing that I would like to add in the future to improve the app. One of these is pagination for the "explore podcasts" list (where you view podcasts from other users). As there can be potentialy hundreds of podcasts, pagination should be implemented to improve load time and memory usage. One other thing that is missing is a parser for podcasts using the ATOM specification. The reason this is not implemented is that I did not find any podcasts using this format, but i'm sure they exist (I only checked maybe 20 podcasts).
 
-## Linter warnings
+### Linter warnings
 There are a few linter warnings which have not been addressed, but there are reasons for that. There are two warnings against performance, the first is a warning about using HashMap instead of SparseArray in MainActivity.class, the reason I have not changed this to SparseArray is because I need a feature from HashMap where I can copy it to an ArrayList quickly (eg. "new ArrayList<>(hashmap.values())"). This is used a few places and I do not see the need to create a workaround for this using SparseArray as I don't think the benefits are enough. The other warning complains about a "very long vector path" for the vector "ic_settings_24dp.xml". This is a bit strange as the vector is auto generated using Android studio and nothing I have control over. There are also several "probable bugs" (over 60 of these). All of these are instances where there might be a NullPointerException, but most places this is not really true (for example when calling GetActivity from a fragment that is attached to an activity) and I have never had a NullPointerException in any of these cases, so I choose to ignore them. There are also a lot of "spelling" warnings (almost 600!), which is quite ridicilous as I am not writing an essay, I am coding.
+
 ## Libraries/APIs used
 * [Firebase](https://firebase.google.com/docs/android/setup)
 * [XmlPullParser](https://developer.android.com/reference/org/xmlpull/v1/XmlPullParser.html)
